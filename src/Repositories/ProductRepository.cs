@@ -1,10 +1,9 @@
+using MongoDB.Driver;
 using The_Plague_Api.Data.Entities;
 using The_Plague_Api.Repositories.Interfaces;
-using The_Plague_Api.Services.Interfaces;
-using MongoDB.Driver;
 using The_Plague_Api.Services;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
+using The_Plague_Api.Services.Interfaces;
+using The_Plague_Api.Data.Dto;
 
 namespace The_Plague_Api.Repositories
 {
@@ -14,8 +13,9 @@ namespace The_Plague_Api.Repositories
 
     public ProductRepository(IMongoDatabase database)
     {
-      const string collectionName = "products";
-      _productService = new MongoDbService<Product>(database, collectionName);
+      const string productCollection = "products";
+
+      _productService = new MongoDbService<Product>(database, productCollection);
     }
 
     public async Task<IEnumerable<Product>> GetAllAsync()
@@ -30,20 +30,12 @@ namespace The_Plague_Api.Repositories
 
     public async Task<Product> CreateAsync(Product product)
     {
-      // Set Product ID
-      product.Id = ObjectId.GenerateNewId().ToString();
-
-      // Assign IDs to variants, sizes, and colors
-      foreach (var variant in product.Variants)
-      {
-        variant.Id = ObjectId.GenerateNewId().ToString();
-      }
-
       return await _productService.CreateAsync(product);
     }
 
     public async Task<bool> UpdateAsync(string id, Product product)
     {
+      product.Id = id; // Ensure the product ID is set correctly for updates
       return await _productService.UpdateAsync(id, product);
     }
 
@@ -56,15 +48,14 @@ namespace The_Plague_Api.Repositories
     {
       try
       {
-        // Fetch documents as Product objects directly
         var products = await _productService.GetAllAsync();
 
-        // Extract unique sizes from the product variants
+        // Extract unique size IDs from variants
         var uniqueSizes = products
-            .SelectMany(product => product.Variants) // Flatten the variants
-            .Select(variant => variant.Size.Name) // Get the size name
-            .Distinct() // Get distinct sizes
-            .ToList(); // Convert to a list
+            .SelectMany(product => product.Variants)
+            .Select(variant => variant.Size.Name)
+            .Distinct()
+            .ToList();
 
         return uniqueSizes;
       }
@@ -75,7 +66,7 @@ namespace The_Plague_Api.Repositories
       }
     }
 
-    public async Task<IEnumerable<Color>> GetUniqueColorsAsync()
+    public async Task<IEnumerable<ColorDto>> GetUniqueColorsAsync()
     {
       try
       {
@@ -85,7 +76,7 @@ namespace The_Plague_Api.Repositories
         // Extract unique colors and their hex codes from the product variants
         var uniqueColors = products
             .SelectMany(product => product.Variants) // Flatten the variants
-            .Select(variant => new Color
+            .Select(variant => new ColorDto
             {
               Name = variant.Color.Name, // Get the color name
               HexCode = variant.Color.HexCode // Get the hex code
@@ -101,7 +92,5 @@ namespace The_Plague_Api.Repositories
         throw;
       }
     }
-
   }
-
 }

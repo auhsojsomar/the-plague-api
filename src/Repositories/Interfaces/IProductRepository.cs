@@ -1,4 +1,4 @@
-using MongoDB.Bson;
+using The_Plague_Api.Data.Dto;
 using The_Plague_Api.Data.Entities;
 
 namespace The_Plague_Api.Repositories.Interfaces
@@ -11,6 +11,6 @@ namespace The_Plague_Api.Repositories.Interfaces
     Task<bool> UpdateAsync(string id, Product product);
     Task<bool> DeleteAsync(string id);
     Task<IEnumerable<string>> GetUniqueSizesAsync();
-    Task<IEnumerable<Color>> GetUniqueColorsAsync();
+    Task<IEnumerable<ColorDto>> GetUniqueColorsAsync();
   }
 }
