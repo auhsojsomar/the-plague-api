@@ -1,11 +1,10 @@
-using The_Plague_Api.Data.Entities;
 using The_Plague_Api.Extension;
 using The_Plague_Api.Repositories;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services;
 using The_Plague_Api.Services.Interfaces;
 using The_Plague_Api.Settings;
-using Microsoft.OpenApi.Models; // Import this namespace for Swagger
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,7 +23,15 @@ app.Run();
 void ConfigureServices(WebApplicationBuilder builder)
 {
   // Add controllers
-  builder.Services.AddControllers();
+  builder.Services.AddControllers()
+  // To make enum can accept number or string
+   .AddJsonOptions(options =>
+    {
+      options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
+
+  // Register AutoMapper
+  builder.Services.AddAutoMapper(typeof(ProductProfile));
 
   // Add MongoDB settings
   builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
