@@ -1,0 +1,54 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Mm]igrations/
+
+# Visual Studio specific files
+.vs/
+*.sln.docstates
+
+# Rider specific files
+.idea/
+*.sublime-workspace
+
+# User-specific files
+*.user
+*.suo
+*.userprefs
+*.tssuo
+
+# Backup & temporary files
+*.bak
+*.tmp
+*.temp
+
+# Package files
+*.nupkg
+*.snupkg
+packages/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# DotNet CLI specific files
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+
+# Visual Studio Code specific files
+.vscode/
+.history/
+
+# Environment variables
+.env
+.env.local
+
+# Others
+*.psess
+*.pdb
+*.mdb
+*.idb
+*.db
+*.log
