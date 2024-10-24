@@ -1,40 +1,50 @@
+using AutoMapper;
+using The_Plague_Api.Data.Dto;
 using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Extension;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
-using MongoDB.Bson;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using MongoDB.Driver;
-using System.Collections;
 
 namespace The_Plague_Api.Services
 {
   public class ProductService : IProductService
   {
     private readonly IProductRepository _repository;
+    private readonly IMapper _mapper;
 
-    public ProductService(IProductRepository repository)
+    public ProductService(IProductRepository repository, IMapper mapper)
     {
       _repository = repository;
+      _mapper = mapper;
     }
 
-    public async Task<IEnumerable<Product>> GetAllProductsAsync()
+    public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
     {
-      return await _repository.GetAllAsync();
+      var products = await _repository.GetAllAsync();
+      return _mapper.Map<IEnumerable<ProductDto>>(products);
     }
 
-    public async Task<Product?> GetProductByIdAsync(string id)
+    public async Task<ProductDto?> GetProductByIdAsync(string id)
     {
-      return await _repository.GetByIdAsync(id);
+      var product = await _repository.GetByIdAsync(id);
+      return product != null ? _mapper.Map<ProductDto>(product) : null;
     }
 
-    public async Task<Product> CreateProductAsync(Product product)
+    public async Task<ProductDto> CreateProductAsync(ProductDto productDto)
     {
-      return await _repository.CreateAsync(product);
+      // Map ProductDto to Product, including the mapping of variants.
+      var product = _mapper.Map<Product>(productDto);
+
+      // Insert the new product into the database.
+      await _repository.CreateAsync(product);
+
+      // Map the created product back to ProductDto to return it.
+      return _mapper.Map<ProductDto>(product);
     }
 
-    public async Task<bool> UpdateProductAsync(string id, Product product)
+    public async Task<bool> UpdateProductAsync(string id, ProductDto productDto)
     {
+      var product = _mapper.Map<Product>(productDto);
       return await _repository.UpdateAsync(id, product);
     }
 
@@ -48,9 +58,10 @@ namespace The_Plague_Api.Services
       return await _repository.GetUniqueSizesAsync();
     }
 
-    public async Task<IEnumerable<Color>> GetUniqueColorsAsync()
+    public async Task<IEnumerable<ColorDto>> GetUniqueColorsAsync()
     {
-      return await _repository.GetUniqueColorsAsync();
+      var colors = await _repository.GetUniqueColorsAsync();
+      return _mapper.Map<IEnumerable<ColorDto>>(colors);
     }
   }
 }
