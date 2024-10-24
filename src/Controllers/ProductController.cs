@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Dto;
 using The_Plague_Api.Services.Interfaces;
 
 namespace The_Plague_Api.Controllers
@@ -32,7 +32,7 @@ namespace The_Plague_Api.Controllers
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(Product product)
+    public async Task<IActionResult> Create(ProductDto product)
     {
       if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -41,7 +41,7 @@ namespace The_Plague_Api.Controllers
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] Product product)
+    public async Task<IActionResult> Update(string id, [FromBody] ProductDto product)
     {
       if (!ModelState.IsValid) return BadRequest(ModelState);
 
