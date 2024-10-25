@@ -10,10 +10,8 @@ namespace The_Plague_Api.Data.Entities
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [BsonElement("email")]
     public required string Email { get; set; }
 
-    [BsonElement("password")]
     public required string Password { get; set; }
   }
 }
