@@ -13,8 +13,7 @@ namespace The_Plague_Api.Data.Entities
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [Required]
-    [MaxLength(100)]
+    [Required, MaxLength(100)]
     public required string Name { get; set; }
 
     [MaxLength(500)]
@@ -22,8 +21,7 @@ namespace The_Plague_Api.Data.Entities
 
     public string? Image { get; set; }
 
-    [Required]
-    [Column(TypeName = "decimal(18,2)")]
+    [Required, Column(TypeName = "decimal(18,2)")]
     public decimal Price { get; set; }
 
     public Discount? Discount { get; set; } // Optional relationship with a discount

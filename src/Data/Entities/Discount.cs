@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -13,7 +14,7 @@ namespace The_Plague_Api.Data.Entities
 
     public DiscountType Type { get; set; }
 
-    [Column(TypeName = "decimal(18,2)")]
+    [Required, Column(TypeName = "decimal(18,2)")]
     public decimal Value { get; set; }
   }
 }

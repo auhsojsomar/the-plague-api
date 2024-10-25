@@ -11,8 +11,10 @@ namespace The_Plague_Api.Data.Entities
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
+    [Required]
     public required Size Size { get; set; }
 
+    [Required]
     public required Color Color { get; set; }
 
     [Column(TypeName = "decimal(18,2)")]
