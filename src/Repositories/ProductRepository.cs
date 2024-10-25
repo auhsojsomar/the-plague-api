@@ -14,7 +14,6 @@ namespace The_Plague_Api.Repositories
     public ProductRepository(IMongoDatabase database)
     {
       const string productCollection = "products";
-
       _productService = new MongoDbService<Product>(database, productCollection);
     }
 

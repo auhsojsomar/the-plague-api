@@ -8,42 +8,58 @@ namespace The_Plague_Api.Controllers
   [Route("api/[controller]")]
   public class DiscountsController : ControllerBase
   {
-    private readonly IDiscountService _service;
+    private readonly IDiscountService _discountService;
 
-    public DiscountsController(IDiscountService service)
+    public DiscountsController(IDiscountService discountService)
     {
-      _service = service;
+      _discountService = discountService;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllAsync()
     {
-      var discounts = await _service.GetAllDiscountsAsync();
+      var discounts = await _discountService.GetAllDiscountsAsync();
       return Ok(discounts);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
+    public async Task<IActionResult> GetByIdAsync(string id)
     {
-      var discount = await _service.GetDiscountByIdAsync(id);
-      if (discount == null) return NotFound();
-      return Ok(discount);
+      var discount = await _discountService.GetDiscountByIdAsync(id);
+      return discount is not null
+          ? Ok(discount)
+          : NotFound(new { Message = $"Discount with ID {id} not found." });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] Discount discount)
+    public async Task<IActionResult> CreateAsync([FromBody] Discount discount)
     {
-      if (!ModelState.IsValid) return BadRequest(ModelState);
-      var createdDiscount = await _service.CreateDiscountAsync(discount);
-      return CreatedAtAction(nameof(GetById), new { id = createdDiscount.Id }, createdDiscount);
+      if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+      var createdDiscount = await _discountService.CreateDiscountAsync(discount);
+      return CreatedAtAction(nameof(GetByIdAsync), new { id = createdDiscount.Id }, createdDiscount);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateAsync(string id, [FromBody] Discount discount)
+    {
+      if (!ModelState.IsValid)
+        return BadRequest(ModelState);
+
+      var updatedDiscount = await _discountService.UpdateDiscountAsync(id, discount);
+      return updatedDiscount
+          ? Ok(new { Message = "Discount updated successfully", Data = updatedDiscount })
+          : NotFound(new { Message = $"Discount with ID {id} not found." });
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
+    public async Task<IActionResult> DeleteAsync(string id)
     {
-      var deleted = await _service.DeleteDiscountAsync(id);
-      if (!deleted) return NotFound();
-      return NoContent();
+      var deleted = await _discountService.DeleteDiscountAsync(id);
+      return deleted
+          ? NoContent()
+          : NotFound(new { Message = $"Discount with ID {id} not found." });
     }
   }
 }

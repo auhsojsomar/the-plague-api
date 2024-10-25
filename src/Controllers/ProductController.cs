@@ -8,69 +8,71 @@ namespace The_Plague_Api.Controllers
   [Route("api/[controller]")]
   public class ProductsController : ControllerBase
   {
-    private readonly IProductService _service;
+    private readonly IProductService _productService;
 
-    public ProductsController(IProductService service)
+    public ProductsController(IProductService productService)
     {
-      _service = service;
+      _productService = productService;
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAllAsync()
     {
-      var products = await _service.GetAllProductsAsync();
+      var products = await _productService.GetAllProductsAsync();
       return Ok(products);
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id)
+    public async Task<IActionResult> GetByIdAsync(string id)
     {
-      var product = await _service.GetProductByIdAsync(id);
-      if (product == null) return NotFound();
-
-      return Ok(product);
+      var product = await _productService.GetProductByIdAsync(id);
+      return product is not null
+          ? Ok(product)
+          : NotFound(new { Message = $"Product with ID {id} not found." });
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(ProductDto product)
+    public async Task<IActionResult> CreateAsync([FromBody] ProductDto productDto)
     {
-      if (!ModelState.IsValid) return BadRequest(ModelState);
+      if (!ModelState.IsValid)
+        return BadRequest(ModelState);
 
-      var createdProduct = await _service.CreateProductAsync(product);
-      return CreatedAtAction(nameof(GetById), new { id = createdProduct.Id }, createdProduct);
+      var createdProduct = await _productService.CreateProductAsync(productDto);
+      return CreatedAtAction(nameof(GetByIdAsync), new { id = createdProduct.Id }, createdProduct);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] ProductDto product)
+    public async Task<IActionResult> UpdateAsync(string id, [FromBody] ProductDto productDto)
     {
-      if (!ModelState.IsValid) return BadRequest(ModelState);
+      if (!ModelState.IsValid)
+        return BadRequest(ModelState);
 
-      var updated = await _service.UpdateProductAsync(id, product);
-      if (!updated) return NotFound();
-
-      return NoContent();
+      var updated = await _productService.UpdateProductAsync(id, productDto);
+      return updated
+          ? NoContent()
+          : NotFound(new { Message = $"Product with ID {id} not found." });
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
+    public async Task<IActionResult> DeleteAsync(string id)
     {
-      var deleted = await _service.DeleteProductAsync(id);
-      if (!deleted) return NotFound();
-
-      return NoContent();
+      var deleted = await _productService.DeleteProductAsync(id);
+      return deleted
+          ? NoContent()
+          : NotFound(new { Message = $"Product with ID {id} not found." });
     }
 
     [HttpGet("sizes")]
-    public async Task<IActionResult> GetSizes()
+    public async Task<IActionResult> GetSizesAsync()
     {
-      var uniqueSizes = await _service.GetUniqueSizesAsync();
+      var uniqueSizes = await _productService.GetUniqueSizesAsync();
       return Ok(uniqueSizes);
     }
 
     [HttpGet("colors")]
-    public async Task<IActionResult> GetColors()
+    public async Task<IActionResult> GetColorsAsync()
     {
-      var uniqueColors = await _service.GetUniqueColorsAsync();
+      var uniqueColors = await _productService.GetUniqueColorsAsync();
       return Ok(uniqueColors);
     }
   }

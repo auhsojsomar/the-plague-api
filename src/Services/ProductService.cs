@@ -1,7 +1,6 @@
 using AutoMapper;
 using The_Plague_Api.Data.Dto;
 using The_Plague_Api.Data.Entities;
-using The_Plague_Api.Extension;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
 
@@ -32,13 +31,8 @@ namespace The_Plague_Api.Services
 
     public async Task<ProductDto> CreateProductAsync(ProductDto productDto)
     {
-      // Map ProductDto to Product, including the mapping of variants.
       var product = _mapper.Map<Product>(productDto);
-
-      // Insert the new product into the database.
       await _repository.CreateAsync(product);
-
-      // Map the created product back to ProductDto to return it.
       return _mapper.Map<ProductDto>(product);
     }
 
