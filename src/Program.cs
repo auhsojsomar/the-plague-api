@@ -5,6 +5,7 @@ using The_Plague_Api.Services;
 using The_Plague_Api.Services.Interfaces;
 using The_Plague_Api.Settings;
 using Microsoft.OpenApi.Models;
+using The_Plague_Api.Data.MappingPorfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,7 @@ void ConfigureServices(WebApplicationBuilder builder)
 
   // Register AutoMapper
   builder.Services.AddAutoMapper(typeof(ProductProfile));
+  builder.Services.AddAutoMapper(typeof(UserProfile));
 
   // Add MongoDB settings
   builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
@@ -40,10 +42,12 @@ void ConfigureServices(WebApplicationBuilder builder)
   // Add Dependency Injection for Repositories
   builder.Services.AddSingleton<IProductRepository, ProductRepository>();
   builder.Services.AddSingleton<IDiscountRepository, DiscountRepository>();
+  builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
   // Add Dependency Injection for Services
   builder.Services.AddScoped<IProductService, ProductService>();
   builder.Services.AddScoped<IDiscountService, DiscountService>();
+  builder.Services.AddScoped<IUserService, UserService>();
 
   // Add CORS services
   builder.Services.AddCors(options =>
