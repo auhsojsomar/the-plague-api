@@ -1,18 +1,23 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using The_Plague_Api.Data.Dto;
+using The_Plague_Api.Services.Authentication;
 using The_Plague_Api.Services.Interfaces;
 
 namespace The_Plague_Api.Controllers
 {
+  [Authorize]
   [ApiController]
   [Route("api/[controller]")]
   public class UserController : ControllerBase
   {
     private readonly IUserService _userService;
+    private readonly JwtService _jwtService;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, JwtService jwtService)
     {
       _userService = userService;
+      _jwtService = jwtService;
     }
 
     [HttpGet]
@@ -40,7 +45,8 @@ namespace The_Plague_Api.Controllers
       try
       {
         var newUser = await _userService.RegisterUserAsync(userDto);
-        return CreatedAtAction(nameof(GetUserByIdAsync), new { id = newUser.Id }, new { Message = "User registered successfully", UserId = newUser.Id });
+        return CreatedAtAction(nameof(GetUserByIdAsync), new { id = newUser.Id },
+            new { Message = "User registered successfully", UserId = newUser.Id });
       }
       catch (ApplicationException ex)
       {
@@ -48,6 +54,7 @@ namespace The_Plague_Api.Controllers
       }
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> LoginAsync([FromBody] UserDto loginDto)
     {
@@ -57,13 +64,39 @@ namespace The_Plague_Api.Controllers
       try
       {
         var user = await _userService.LoginUserAsync(loginDto);
-        return user is not null
-            ? Ok(new { Message = "Login successful", UserId = user.Id })
-            : NotFound(new { Message = "User not found" });
+
+        // Ensure user is not null before accessing properties
+        if (user == null)
+        {
+          return Unauthorized(new { Message = "Invalid email or password" });
+        }
+
+        // At this point, we can safely access user.Id and user.Email
+        if (user.Id == null)
+        {
+          return StatusCode(500, new { Error = "User ID is null" });
+        }
+
+        // Generate JWT token
+        var (token, expiration) = _jwtService.GenerateJwtToken(user.Id, user.Email);
+
+        // Return token, expiration, and user info
+        return Ok(new
+        {
+          Token = token,
+          ExpiresAt = expiration, // More precise expiration info
+          UserId = user.Id
+        });
       }
       catch (ApplicationException ex)
       {
+        // Handle known exceptions (e.g., login-related issues)
         return Unauthorized(new { Error = ex.Message });
+      }
+      catch (Exception ex)
+      {
+        // Catch unexpected exceptions to avoid exposing sensitive info
+        return StatusCode(500, new { Error = ex.Message });
       }
     }
 

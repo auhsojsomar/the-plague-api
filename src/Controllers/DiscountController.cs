@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using The_Plague_Api.Data.Entities;
 using The_Plague_Api.Services.Interfaces;
 
 namespace The_Plague_Api.Controllers
 {
+  [Authorize]
   [ApiController]
   [Route("api/[controller]")]
   public class DiscountsController : ControllerBase
@@ -15,6 +17,7 @@ namespace The_Plague_Api.Controllers
       _discountService = discountService;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
     {
@@ -22,6 +25,7 @@ namespace The_Plague_Api.Controllers
       return Ok(discounts);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(string id)
     {

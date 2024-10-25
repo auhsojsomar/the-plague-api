@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using The_Plague_Api.Data.Dto;
 using The_Plague_Api.Services.Interfaces;
 
 namespace The_Plague_Api.Controllers
 {
+  [Authorize]
   [ApiController]
   [Route("api/[controller]")]
   public class ProductsController : ControllerBase
@@ -15,6 +17,7 @@ namespace The_Plague_Api.Controllers
       _productService = productService;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> GetAllAsync()
     {
@@ -22,6 +25,7 @@ namespace The_Plague_Api.Controllers
       return Ok(products);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<IActionResult> GetByIdAsync(string id)
     {
@@ -62,6 +66,7 @@ namespace The_Plague_Api.Controllers
           : NotFound(new { Message = $"Product with ID {id} not found." });
     }
 
+    [AllowAnonymous]
     [HttpGet("sizes")]
     public async Task<IActionResult> GetSizesAsync()
     {
@@ -69,6 +74,7 @@ namespace The_Plague_Api.Controllers
       return Ok(uniqueSizes);
     }
 
+    [AllowAnonymous]
     [HttpGet("colors")]
     public async Task<IActionResult> GetColorsAsync()
     {
