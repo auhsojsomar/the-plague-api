@@ -15,6 +15,22 @@ namespace The_Plague_Api.Controllers
       _userService = userService;
     }
 
+    [HttpGet]
+    public async Task<IActionResult> GetAllUsersAsync()
+    {
+      var users = await _userService.GetAllUsersAsync();
+      return Ok(users);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUserByIdAsync(string id)
+    {
+      var user = await _userService.GetUserByIdAsync(id);
+      return user is not null
+          ? Ok(user)
+          : NotFound(new { Message = "User not found" });
+    }
+
     [HttpPost("register")]
     public async Task<IActionResult> RegisterAsync([FromBody] UserDto userDto)
     {
@@ -49,22 +65,6 @@ namespace The_Plague_Api.Controllers
       {
         return Unauthorized(new { Error = ex.Message });
       }
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetUserByIdAsync(string id)
-    {
-      var user = await _userService.GetUserByIdAsync(id);
-      return user is not null
-          ? Ok(user)
-          : NotFound(new { Message = "User not found" });
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetAllUsersAsync()
-    {
-      var users = await _userService.GetAllUsersAsync();
-      return Ok(users);
     }
 
     [HttpPut("{id}")]
