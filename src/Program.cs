@@ -26,10 +26,20 @@ void ConfigureServices(WebApplicationBuilder builder)
 {
   // Add controllers
   builder.Services.AddControllers()
-      .AddJsonOptions(options =>
-      {
-        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-      });
+  .AddJsonOptions(options =>
+  {
+    options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+  });
+
+
+  builder.Services.AddMvc(options =>
+  {
+    // Prevents ASP.NET Core from removing the "Async" suffix from action names.
+    // This ensures that routes referencing methods with "Async" in their names 
+    // (e.g., GetUserByIdAsync) are correctly matched. 
+    // Without this, you might encounter routing issues if route names and method names don’t align.
+    options.SuppressAsyncSuffixInActionNames = false;
+  });
 
   // Add JWT Authentication
   builder.Services.AddJwtAuthentication(builder.Configuration);
