@@ -1,11 +1,12 @@
-using The_Plague_Api.Extension;
+using The_Plague_Api.Extensions;
 using The_Plague_Api.Repositories;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services;
 using The_Plague_Api.Services.Interfaces;
 using The_Plague_Api.Settings;
-using Microsoft.OpenApi.Models;
 using The_Plague_Api.Data.MappingPorfiles;
+using Microsoft.OpenApi.Models;
+using The_Plague_Api.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,11 +26,13 @@ void ConfigureServices(WebApplicationBuilder builder)
 {
   // Add controllers
   builder.Services.AddControllers()
-  // To make enum can accept number or string
-   .AddJsonOptions(options =>
-    {
-      options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
-    });
+      .AddJsonOptions(options =>
+      {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+      });
+
+  // Add JWT Authentication
+  builder.Services.AddJwtAuthentication(builder.Configuration);
 
   // Register AutoMapper
   builder.Services.AddAutoMapper(typeof(ProductProfile));
@@ -39,28 +42,28 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
   builder.Services.AddMongoDbConnection();
 
-  // Add Dependency Injection for Repositories
+  // Register repositories
   builder.Services.AddSingleton<IProductRepository, ProductRepository>();
   builder.Services.AddSingleton<IDiscountRepository, DiscountRepository>();
   builder.Services.AddSingleton<IUserRepository, UserRepository>();
 
-  // Add Dependency Injection for Services
+  // Register services
   builder.Services.AddScoped<IProductService, ProductService>();
   builder.Services.AddScoped<IDiscountService, DiscountService>();
   builder.Services.AddScoped<IUserService, UserService>();
 
-  // Add CORS services
+  // Add CORS
   builder.Services.AddCors(options =>
   {
     options.AddPolicy("AllowLocalhost", builder =>
       {
-        builder.WithOrigins("http://localhost:3000") // Allow your Next.js app
+        builder.WithOrigins("http://localhost:3000")
                  .AllowAnyMethod()
                  .AllowAnyHeader();
       });
   });
 
-  // Add Swagger services
+  // Add Swagger
   builder.Services.AddSwaggerGen(c =>
   {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "The Plague API", Version = "v1" });
@@ -69,7 +72,6 @@ void ConfigureServices(WebApplicationBuilder builder)
 
 void ConfigureMiddleware(WebApplication app)
 {
-  // Uncomment the following lines to enable Swagger in development
   if (app.Environment.IsDevelopment())
   {
     app.UseSwagger();
@@ -81,6 +83,9 @@ void ConfigureMiddleware(WebApplication app)
 
   app.UseHttpsRedirection();
   app.UseCors("AllowLocalhost");
+
+  app.UseAuthentication();
   app.UseAuthorization();
+
   app.MapControllers();
 }
