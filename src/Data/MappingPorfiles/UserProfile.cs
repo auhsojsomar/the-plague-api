@@ -8,8 +8,11 @@ namespace The_Plague_Api.Data.MappingPorfiles
   {
     public UserProfile()
     {
-      // Usser mappings
       CreateMap<UserEmailDto, User>()
+       .ForMember(dest => dest.Id, opt => opt.Ignore())
+       .ReverseMap();
+
+      CreateMap<UserDto, User>()
        .ForMember(dest => dest.Id, opt => opt.Ignore())
        .ReverseMap();
     }
