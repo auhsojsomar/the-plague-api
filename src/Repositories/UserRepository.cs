@@ -23,8 +23,7 @@ namespace The_Plague_Api.Repositories
 
     public async Task<User?> GetUserByIdAsync(string id)
     {
-      var user = await _userService.GetAsync(id);
-      return user;
+      return await _userService.GetAsync(id);
     }
 
     public async Task<User?> GetUserByEmailAsync(string email)
