@@ -7,8 +7,8 @@ namespace The_Plague_Api.Services.Interfaces
   {
     Task<IEnumerable<UserEmailDto>> GetAllUsersAsync();
     Task<UserEmailDto?> GetUserByIdAsync(string id);
-    Task<User> RegisterUserAsync(UserDto userDto);
-    Task<User?> LoginUserAsync(UserDto loginDto);
+    Task<User> RegisterUserAsync(User user);
+    Task<User?> LoginUserAsync(UserLoginDto userLoginDto);
     Task<bool> UpdateUserAsync(string id, UserEmailDto userDto);
     Task<bool> DeleteUserAsync(string id);
   }

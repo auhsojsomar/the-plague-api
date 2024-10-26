@@ -29,21 +29,19 @@ namespace The_Plague_Api.Services
       return _mapper.Map<UserEmailDto>(user);
     }
 
-    public async Task<User> RegisterUserAsync(UserDto userDto)
+    public async Task<User> RegisterUserAsync(User user)
     {
       try
       {
-        var existingUser = await _userRepository.GetUserByEmailAsync(userDto.Email);
+        var existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
         if (existingUser != null)
           throw new ApplicationException("User with this email already exists.");
 
-        var newUser = new User
-        {
-          Email = userDto.Email,
-          Password = BCrypt.Net.BCrypt.HashPassword(userDto.Password)
-        };
+        // Hash the password
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-        return await _userRepository.CreateUserAsync(newUser);
+        // Create the user in the repository
+        return await _userRepository.CreateUserAsync(user);
       }
       catch (Exception ex)
       {
@@ -51,16 +49,16 @@ namespace The_Plague_Api.Services
       }
     }
 
-    public async Task<User?> LoginUserAsync(UserDto loginDto)
+    public async Task<User?> LoginUserAsync(UserLoginDto userLoginDto)
     {
       try
       {
-        var user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
+        var user = await _userRepository.GetUserByEmailAsync(userLoginDto.Email);
         if (user == null)
           throw new ApplicationException("Invalid email or password.");
 
         // Verify the password
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
+        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(userLoginDto.Password, user.Password);
         if (!isPasswordValid)
           throw new ApplicationException("Invalid email or password.");
 

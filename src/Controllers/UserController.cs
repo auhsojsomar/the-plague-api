@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using The_Plague_Api.Data.Dto;
+using The_Plague_Api.Data.Entities;
 using The_Plague_Api.Services.Authentication;
 using The_Plague_Api.Services.Interfaces;
 
@@ -44,15 +45,14 @@ namespace The_Plague_Api.Controllers
     // POST: api/user/register
     // Registers a new user in the system.
     [HttpPost("register")]
-    public async Task<IActionResult> RegisterAsync([FromBody] UserDto userDto)
+    public async Task<IActionResult> RegisterAsync([FromBody] User user)
     {
       if (!ModelState.IsValid)
         return BadRequest(ModelState); // Returns 400 if the request data is invalid.
 
       try
       {
-        var newUser = await _userService.RegisterUserAsync(userDto);
-        Console.WriteLine($"Generated user ID: {newUser.Id}");
+        var newUser = await _userService.RegisterUserAsync(user);
 
         if (newUser?.Id == null)
           return StatusCode(500, new { Error = "User ID is null after registration." }); // Returns 500 if no ID is generated.
@@ -73,14 +73,14 @@ namespace The_Plague_Api.Controllers
     // POST: api/user/login
     // Logs in an existing user and generates a JWT token.
     [HttpPost("login")]
-    public async Task<IActionResult> LoginAsync([FromBody] UserDto loginDto)
+    public async Task<IActionResult> LoginAsync([FromBody] UserLoginDto userLoginDto)
     {
       if (!ModelState.IsValid)
         return BadRequest(ModelState); // Returns 400 for invalid input.
 
       try
       {
-        var user = await _userService.LoginUserAsync(loginDto);
+        var user = await _userService.LoginUserAsync(userLoginDto);
         if (user == null || user.Id == null)
           return Unauthorized(new { Message = "Invalid email or password" }); // Returns 401 for incorrect credentials.
 
