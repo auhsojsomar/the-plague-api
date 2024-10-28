@@ -1,6 +1,6 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.Product;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
 using The_Plague_Api.Services;

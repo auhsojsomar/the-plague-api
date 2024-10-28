@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.Product;
 using The_Plague_Api.Services.Interfaces;
 
 namespace The_Plague_Api.Controllers
