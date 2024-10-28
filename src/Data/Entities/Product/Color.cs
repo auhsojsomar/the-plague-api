@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace The_Plague_Api.Data.Entities
+namespace The_Plague_Api.Data.Entities.Product
 {
   public class Color
   {

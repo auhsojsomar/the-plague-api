@@ -4,7 +4,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using The_Plague_Api.Data.Interface;
 
-namespace The_Plague_Api.Data.Entities
+namespace The_Plague_Api.Data.Entities.Product
 {
   public class Discount : IMongo
   {

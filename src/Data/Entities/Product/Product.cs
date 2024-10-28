@@ -3,9 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using The_Plague_Api.Data.Interface;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System.Collections.Generic;
 
-namespace The_Plague_Api.Data.Entities
+namespace The_Plague_Api.Data.Entities.Product
 {
   public class Product : IMongo
   {
@@ -19,7 +18,7 @@ namespace The_Plague_Api.Data.Entities
     [MaxLength(500)]
     public string? Description { get; set; }
 
-    public string? Image { get; set; }
+    public Image? Image { get; set; }
 
     [Required, Column(TypeName = "decimal(18,2)")]
     public decimal Price { get; set; }
