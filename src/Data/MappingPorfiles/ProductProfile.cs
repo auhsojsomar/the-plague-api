@@ -1,6 +1,6 @@
 using AutoMapper;
 using The_Plague_Api.Data.Dto;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.Product;
 
 public class ProductProfile : Profile
 {

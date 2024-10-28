@@ -1,9 +1,12 @@
 using MongoDB.Driver;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.Product;
 using The_Plague_Api.Repositories.Interfaces;
-using The_Plague_Api.Services;
 using The_Plague_Api.Services.Interfaces;
 using The_Plague_Api.Data.Dto;
+using The_Plague_Api.Services;
+using MongoDB.Bson;
+using System.Text.RegularExpressions;
+using The_Plague_Api.Helpers;
 
 namespace The_Plague_Api.Repositories
 {
@@ -17,79 +20,84 @@ namespace The_Plague_Api.Repositories
       _productService = new MongoDbService<Product>(database, productCollection);
     }
 
-    public async Task<IEnumerable<Product>> GetAllAsync()
+    public Task<IEnumerable<Product>> GetAllAsync()
     {
-      return await _productService.GetAllAsync();
+      return _productService.GetAllAsync();
     }
 
-    public async Task<Product?> GetByIdAsync(string id)
+    public Task<Product?> GetByIdAsync(string id)
     {
-      return await _productService.GetAsync(id);
+      if (string.IsNullOrEmpty(id))
+        throw new ArgumentException("ID cannot be null or empty.", nameof(id));
+
+      return _productService.GetAsync(id);
     }
 
-    public async Task<Product> CreateAsync(Product product)
+    public async Task<Product?> GetByNameAsync(string name)
     {
-      return await _productService.CreateAsync(product);
+      if (string.IsNullOrWhiteSpace(name))
+        return null; // Handle null or whitespace input
+
+      // Retrieve all products from the repository (this could be optimized based on your requirements)
+      var products = await _productService.GetAllAsync();
+
+      // Filter the products in memory using kebab case comparison
+      return products.FirstOrDefault(product =>
+          StringHelpers.ToKebabCase(product.Name) == name);
     }
 
-    public async Task<bool> UpdateAsync(string id, Product product)
+    public Task<Product> CreateAsync(Product product)
     {
-      product.Id = id; // Ensure the product ID is set correctly for updates
-      return await _productService.UpdateAsync(id, product);
+      return _productService.CreateAsync(product);
     }
 
-    public async Task<bool> DeleteAsync(string id)
+    public Task<bool> UpdateAsync(string id, Product product)
     {
-      return await _productService.DeleteAsync(id);
+      if (string.IsNullOrEmpty(id))
+        throw new ArgumentException("ID cannot be null or empty.", nameof(id));
+
+      product.Id = id; // Ensure the ID is correctly set for updates
+      return _productService.UpdateAsync(id, product);
+    }
+
+    public Task<bool> DeleteAsync(string id)
+    {
+      if (string.IsNullOrEmpty(id))
+        throw new ArgumentException("ID cannot be null or empty.", nameof(id));
+
+      return _productService.DeleteAsync(id);
     }
 
     public async Task<IEnumerable<string>> GetUniqueSizesAsync()
     {
-      try
-      {
-        var products = await _productService.GetAllAsync();
-
-        // Extract unique size IDs from variants
-        var uniqueSizes = products
-            .SelectMany(product => product.Variants)
-            .Select(variant => variant.Size.Name)
-            .Distinct()
-            .ToList();
-
-        return uniqueSizes;
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine($"Error in GetUniqueSizesAsync: {ex.Message}");
-        throw;
-      }
+      var products = await _productService.GetAllAsync();
+      return ExtractUniqueSizes(products);
     }
 
     public async Task<IEnumerable<ColorDto>> GetUniqueColorsAsync()
     {
-      try
-      {
-        // Fetch documents as Product objects directly
-        var products = await _productService.GetAllAsync();
+      var products = await _productService.GetAllAsync();
+      return ExtractUniqueColors(products);
+    }
 
-        // Extract unique colors and their hex codes from the product variants
-        var uniqueColors = products
-            .SelectMany(product => product.Variants) // Flatten the variants
-            .Select(variant => new ColorDto
-            {
-              Name = variant.Color.Name, // Get the color name
-              HexCode = variant.Color.HexCode // Get the hex code
-            })
-            .DistinctBy(c => c.Name) // Ensure distinct color names
-            .ToList(); // Convert to a list
+    // Helper method to extract unique sizes from product variants
+    private static IEnumerable<string> ExtractUniqueSizes(IEnumerable<Product> products)
+    {
+      return products
+          .SelectMany(p => p.Variants)
+          .Select(v => v.Size.Name)
+          .Distinct()
+          .ToList();
+    }
 
-        return uniqueColors;
-      }
-      catch (Exception ex)
-      {
-        Console.WriteLine($"Error in GetUniqueColorsAsync: {ex.Message}");
-        throw;
-      }
+    // Helper method to extract unique colors with their hex codes
+    private static IEnumerable<ColorDto> ExtractUniqueColors(IEnumerable<Product> products)
+    {
+      return products
+          .SelectMany(p => p.Variants)
+          .Select(v => new ColorDto { Name = v.Color.Name, HexCode = v.Color.HexCode })
+          .DistinctBy(c => c.Name)
+          .ToList();
     }
   }
 }

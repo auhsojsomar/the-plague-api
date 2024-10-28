@@ -1,6 +1,4 @@
-using MongoDB.Bson;
 using The_Plague_Api.Data.Dto;
-using The_Plague_Api.Data.Entities;
 
 namespace The_Plague_Api.Services.Interfaces
 {
@@ -8,6 +6,7 @@ namespace The_Plague_Api.Services.Interfaces
   {
     Task<IEnumerable<ProductDto>> GetAllProductsAsync();
     Task<ProductDto?> GetProductByIdAsync(string id);
+    Task<ProductDto?> GetProductByNameAsync(string name);
     Task<ProductDto> CreateProductAsync(ProductDto product);
     Task<bool> UpdateProductAsync(string id, ProductDto product);
     Task<bool> DeleteProductAsync(string id);

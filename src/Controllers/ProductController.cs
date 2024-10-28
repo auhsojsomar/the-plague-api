@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using The_Plague_Api.Data.Dto;
+using The_Plague_Api.Helpers;
 using The_Plague_Api.Services.Interfaces;
 
 namespace The_Plague_Api.Controllers
 {
   // This controller manages product-related operations.
   // Authorization is required for most endpoints, except where marked with [AllowAnonymous].
-  [Authorize]
+  // [Authorize]
   [ApiController]
   [Route("api/[controller]")]
   public class ProductsController : ControllerBase
@@ -33,13 +34,25 @@ namespace The_Plague_Api.Controllers
     // GET: api/products/{id}
     // Retrieves a product by its ID. No authorization required.
     [AllowAnonymous]
-    [HttpGet("{id}")]
+    [HttpGet("id/{id}")]
     public async Task<IActionResult> GetByIdAsync(string id)
     {
       var product = await _productService.GetProductByIdAsync(id);
       return product is not null
           ? Ok(product) // Returns 200 OK if the product exists.
-          : NotFound(new { Message = $"Product with ID {id} not found." }); // 404 if not found.
+          : NotFound(new { Message = $"Product with id {id} not found." }); // 404 if not found.
+    }
+
+    // GET: api/products/{name}
+    // Retrieves a product by its ID. No authorization required.
+    [AllowAnonymous]
+    [HttpGet("name/{name}")]
+    public async Task<IActionResult> GetByNameAsync(string name)
+    {
+      var product = await _productService.GetProductByNameAsync(name);
+      return product is not null
+          ? Ok(product)
+          : NotFound(new { Message = $"Product with name '{name}' not found." });
     }
 
     // POST: api/products
@@ -50,12 +63,20 @@ namespace The_Plague_Api.Controllers
       if (!ModelState.IsValid)
         return BadRequest(ModelState); // Returns 400 Bad Request if the model is invalid.
 
-      var createdProduct = await _productService.CreateProductAsync(productDto);
-      return CreatedAtAction(
-          nameof(GetByIdAsync),
-          new { id = createdProduct.Id },
-          createdProduct
-      ); // Returns 201 Created with the new product and location.
+      try
+      {
+        var createdProduct = await _productService.CreateProductAsync(productDto);
+
+        return CreatedAtAction(
+            nameof(GetByNameAsync),
+            new { name = createdProduct.Name },
+            createdProduct
+        ); // Returns 201 Created with the new product and location.
+      }
+      catch (ApplicationException ex)
+      {
+        return Conflict(new { Error = ex.Message });
+      }
     }
 
     // PUT: api/products/{id}
