@@ -3,7 +3,6 @@ using The_Plague_Api.Data.Entities.Product;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
 using AutoMapper;
-using The_Plague_Api.Helpers;
 
 namespace The_Plague_Api.Services
 {
@@ -38,10 +37,49 @@ namespace The_Plague_Api.Services
 
     public async Task<ProductDto> CreateProductAsync(ProductDto productDto)
     {
+      // Check if the product name already exists
       if (await _productRepository.GetByNameAsync(productDto.Name) != null)
         throw new ApplicationException("Product name already exists.");
 
-      var product = _mapper.Map<Product>(productDto);
+      // Create a new product entity
+      var product = new Product
+      {
+        Name = productDto.Name,
+        Description = productDto.Description,
+        Image = productDto.Image,
+        Variants = productDto.Variants.Select(variant =>
+        {
+          // Create a new Variant entity
+          var newVariant = new Variant
+          {
+            Size = new Size // Create a new Size entity from SizeDto
+            {
+              Name = variant.Size.Name
+            },
+            Color = new Color // Create a new Color entity from ColorDto
+            {
+              Name = variant.Color.Name,
+              HexCode = variant.Color.HexCode
+            },
+            Price = variant.Price,
+            Quantity = variant.Quantity
+          };
+
+          // Only add Discount if it exists (do not assign if null)
+          if (variant.Discount != null)
+          {
+            newVariant.Discount = new Discount // Create a new Discount entity
+            {
+              Type = variant.Discount.Type,
+              Value = variant.Discount.Value
+            };
+          }
+
+          return newVariant;
+        }).ToList()
+      };
+
+      // Save the product to the repository
       var createdProduct = await _productRepository.CreateAsync(product);
       return _mapper.Map<ProductDto>(createdProduct);
     }
