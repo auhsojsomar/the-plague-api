@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -19,6 +20,10 @@ namespace The_Plague_Api.Data.Entities.Product
 
     [Column(TypeName = "decimal(18,2)")]
     public decimal Price { get; set; }
+
+    [BsonIgnoreIfNull]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Discount? Discount { get; set; }
 
     public int Quantity { get; set; }
   }
