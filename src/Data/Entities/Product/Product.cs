@@ -20,11 +20,6 @@ namespace The_Plague_Api.Data.Entities.Product
 
     public Image? Image { get; set; }
 
-    [Required, Column(TypeName = "decimal(18,2)")]
-    public decimal Price { get; set; }
-
-    public Discount? Discount { get; set; } // Optional relationship with a discount
-
     [Required]
     public ICollection<Variant> Variants { get; set; } = new List<Variant>(); // Ensure initialization
   }
