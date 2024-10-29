@@ -36,14 +36,14 @@ namespace The_Plague_Api.Repositories
     public async Task<Product?> GetByNameAsync(string name)
     {
       if (string.IsNullOrWhiteSpace(name))
-        return null; // Handle null or whitespace input
+        throw new ArgumentException("Name cannot be null or empty.", nameof(name));
 
       // Retrieve all products from the repository (this could be optimized based on your requirements)
       var products = await _productService.GetAllAsync();
 
       // Filter the products in memory using kebab case comparison
       return products.FirstOrDefault(product =>
-          StringHelpers.ToKebabCase(product.Name) == name);
+          StringHelpers.ToKebabCase(product.Name) == StringHelpers.ToKebabCase(name));
     }
 
     public Task<Product> CreateAsync(Product product)
