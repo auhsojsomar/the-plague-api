@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using The_Plague_Api.Data.Interface;
 
 namespace The_Plague_Api.Data.Entities.Product
 {
-  public class Color
+  public class Color : IMongo
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
