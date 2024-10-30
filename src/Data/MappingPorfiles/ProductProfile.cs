@@ -16,23 +16,10 @@ public class ProductProfile : Profile
         .ForMember(dest => dest.Id, opt => opt.Ignore())
         .ReverseMap();
 
-    // Forward Mapping: Variant to VariantDto
-    CreateMap<Variant, VariantDto>()
-        .ForMember(dest => dest.Discount, opt => opt.MapFrom(src =>
-            src.Discount != null ? new DiscountDto
-            {
-              Type = src.Discount.Type,
-              Value = src.Discount.Value
-            } : null));
-
-    // Reverse Mapping: VariantDto to Variant
+    // Variant mappings
     CreateMap<VariantDto, Variant>()
-        .ForMember(dest => dest.Discount, opt => opt.MapFrom(src =>
-            src.Discount != null ? new Discount
-            {
-              Type = src.Discount.Type,
-              Value = src.Discount.Value
-            } : null));
+        .ForMember(dest => dest.Id, opt => opt.Ignore())
+        .ReverseMap();
 
     // Size mappings
     CreateMap<SizeDto, Size>()
