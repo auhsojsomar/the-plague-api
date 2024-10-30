@@ -13,5 +13,9 @@ namespace The_Plague_Api.Repositories.Interfaces
     Task<bool> DeleteAsync(string id);
     Task<IEnumerable<string>> GetUniqueSizesAsync();
     Task<IEnumerable<ColorDto>> GetUniqueColorsAsync();
+    Task<Color?> GetColorByNameAsync(string name);
+    Task<Size?> GetSizeByNameAsync(string name);
+    Task<Color> CreateColorAsync(Color color);
+    Task<Size> CreateSizeAsync(Size size);
   }
 }

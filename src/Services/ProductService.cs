@@ -37,51 +37,81 @@ namespace The_Plague_Api.Services
 
     public async Task<ProductDto> CreateProductAsync(ProductDto productDto)
     {
-      // Check if the product name already exists
+      // Validate product name uniqueness
       if (await _productRepository.GetByNameAsync(productDto.Name) != null)
         throw new ApplicationException("Product name already exists.");
 
-      // Create a new product entity
       var product = new Product
       {
         Name = productDto.Name,
         Description = productDto.Description,
         Image = productDto.Image,
-        Variants = productDto.Variants.Select(variant =>
-        {
-          // Create a new Variant entity
-          var newVariant = new Variant
-          {
-            Size = new Size // Create a new Size entity from SizeDto
-            {
-              Name = variant.Size.Name
-            },
-            Color = new Color // Create a new Color entity from ColorDto
-            {
-              Name = variant.Color.Name,
-              HexCode = variant.Color.HexCode
-            },
-            Price = variant.Price,
-            Quantity = variant.Quantity
-          };
-
-          // Only add Discount if it exists (do not assign if null)
-          if (variant.Discount != null)
-          {
-            newVariant.Discount = new Discount // Create a new Discount entity
-            {
-              Type = variant.Discount.Type,
-              Value = variant.Discount.Value
-            };
-          }
-
-          return newVariant;
-        }).ToList()
+        Variants = await CreateVariantsAsync(productDto.Variants)
       };
 
-      // Save the product to the repository
       var createdProduct = await _productRepository.CreateAsync(product);
       return _mapper.Map<ProductDto>(createdProduct);
+    }
+
+    private async Task<List<Variant>> CreateVariantsAsync(IEnumerable<VariantDto> variantDtos)
+    {
+      var variants = new List<Variant>();
+
+      foreach (var variantDto in variantDtos)
+      {
+        var size = await GetOrCreateSizeAsync(variantDto.Size.Name);
+        var color = await GetOrCreateColorAsync(variantDto.Color.Name, variantDto.Color.HexCode);
+
+        var newVariant = new Variant
+        {
+          Size = size,
+          Color = color, // Reuse the color object
+          Price = variantDto.Price,
+          Quantity = variantDto.Quantity,
+          Discount = variantDto.Discount != null
+          ? new Discount
+          {
+            Type = variantDto.Discount.Type,
+            Value = variantDto.Discount.Value
+          }
+          : null
+        };
+
+        variants.Add(newVariant);
+      }
+
+      return variants;
+    }
+
+    private async Task<Size> GetOrCreateSizeAsync(string sizeName)
+    {
+      var existingSize = await _productRepository.GetSizeByNameAsync(sizeName);
+      if (existingSize != null) return existingSize;
+
+      var newSize = new Size { Name = sizeName };
+      await _productRepository.CreateSizeAsync(newSize);
+      return newSize;
+    }
+    private async Task<Color> GetOrCreateColorAsync(string colorName, string hexCode)
+    {
+      // Check if the color already exists by its name
+      var existingColor = await _productRepository.GetColorByNameAsync(colorName);
+      if (existingColor != null)
+      {
+        // If it exists, return the existing color
+        return existingColor;
+      }
+
+      // If it doesn't exist, create a new Color with the provided name and hex code
+      var newColor = new Color
+      {
+        Name = colorName,
+        HexCode = hexCode // Use the provided hex code for the new color
+      };
+
+      // Save the new color in the repository
+      await _productRepository.CreateColorAsync(newColor);
+      return newColor;
     }
 
     public async Task<bool> UpdateProductAsync(string id, ProductDto productDto)
