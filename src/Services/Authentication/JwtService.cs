@@ -28,7 +28,7 @@ namespace The_Plague_Api.Services.Authentication
       var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
       var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-      var expiration = DateTime.UtcNow.AddSeconds(_jwtSettings.ExpiryMinutes);
+      var expiration = DateTime.UtcNow.AddYears(_jwtSettings.ExpiryMinutes);
 
       var token = new JwtSecurityToken(
           _jwtSettings.Issuer,
