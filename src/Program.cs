@@ -56,11 +56,17 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.AddSingleton<IProductRepository, ProductRepository>();
   builder.Services.AddSingleton<IDiscountRepository, DiscountRepository>();
   builder.Services.AddSingleton<IUserRepository, UserRepository>();
+  builder.Services.AddSingleton<IOrderRepository, OrderRepository>();
+  builder.Services.AddSingleton<IStatusRepository, StatusRepository>();
+  builder.Services.AddSingleton<IPaymentMethodRepository, PaymentMethodRepository>();
 
   // Register services
   builder.Services.AddScoped<IProductService, ProductService>();
   builder.Services.AddScoped<IDiscountService, DiscountService>();
   builder.Services.AddScoped<IUserService, UserService>();
+  builder.Services.AddScoped<IOrderService, OrderService>();
+  builder.Services.AddScoped<IStatusService, StatusService>();
+  builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
 
   // Add CORS
   builder.Services.AddCors(options =>
