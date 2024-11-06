@@ -49,7 +49,7 @@ namespace The_Plague_Api.Services
     // Helper method to validate if UserId is valid
     private async Task ValidateUserAsync(string userId)
     {
-      var user = await _userRepository.GetUserByIdAsync(userId); // Assume ExistsAsync is a method in IUserRepository
+      var user = await _userRepository.GetByIdAsync(userId); // Assume ExistsAsync is a method in IUserRepository
       if (user == null)
       {
         throw new ArgumentException("Invalid UserId: User does not exist.");

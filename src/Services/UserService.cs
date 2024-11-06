@@ -19,13 +19,13 @@ namespace The_Plague_Api.Services
 
     public async Task<IEnumerable<UserEmailDto>> GetAllUsersAsync()
     {
-      var users = await _userRepository.GetAllUsersAsync();
+      var users = await _userRepository.GetAllAsync();
       return _mapper.Map<IEnumerable<UserEmailDto>>(users);
     }
 
     public async Task<UserEmailDto?> GetUserByIdAsync(string id)
     {
-      var user = await _userRepository.GetUserByIdAsync(id);
+      var user = await _userRepository.GetByIdAsync(id);
       return _mapper.Map<UserEmailDto>(user);
     }
 
@@ -33,7 +33,7 @@ namespace The_Plague_Api.Services
     {
       try
       {
-        var existingUser = await _userRepository.GetUserByEmailAsync(user.Email);
+        var existingUser = await _userRepository.GetByEmailAsync(user.Email);
         if (existingUser != null)
           throw new ApplicationException("User with this email already exists.");
 
@@ -41,7 +41,7 @@ namespace The_Plague_Api.Services
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
         // Create the user in the repository
-        return await _userRepository.CreateUserAsync(user);
+        return await _userRepository.CreateAsync(user);
       }
       catch (Exception ex)
       {
@@ -53,7 +53,7 @@ namespace The_Plague_Api.Services
     {
       try
       {
-        var user = await _userRepository.GetUserByEmailAsync(userLoginDto.Email);
+        var user = await _userRepository.GetByEmailAsync(userLoginDto.Email);
         if (user == null)
           throw new ApplicationException("Invalid email or password.");
 
@@ -72,18 +72,18 @@ namespace The_Plague_Api.Services
 
     public async Task<bool> UpdateUserAsync(string id, UserEmailDto userDto)
     {
-      var user = await _userRepository.GetUserByIdAsync(id);
+      var user = await _userRepository.GetByIdAsync(id);
       if (user == null)
         throw new ApplicationException("User not found.");
 
       user.Email = userDto.Email;
 
-      return await _userRepository.UpdateUserAsync(id, user);
+      return await _userRepository.UpdateAsync(id, user);
     }
 
     public async Task<bool> DeleteUserAsync(string id)
     {
-      return await _userRepository.DeleteUserAsync(id);
+      return await _userRepository.DeleteAsync(id);
     }
   }
 }
