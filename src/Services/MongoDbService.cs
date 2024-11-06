@@ -1,8 +1,5 @@
 using The_Plague_Api.Services.Interfaces;
 using MongoDB.Driver;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
 using The_Plague_Api.Data.Interface;
 
 namespace The_Plague_Api.Services

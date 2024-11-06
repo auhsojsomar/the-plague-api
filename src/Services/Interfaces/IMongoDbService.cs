@@ -1,5 +1,4 @@
 using MongoDB.Driver;
-using System.Linq.Expressions;
 using The_Plague_Api.Data.Interface;
 
 namespace The_Plague_Api.Services.Interfaces
