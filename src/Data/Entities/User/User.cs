@@ -27,7 +27,7 @@ namespace The_Plague_Api.Data.Entities.User
     [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
     public required string Password { get; set; }
 
-    public ICollection<Address>? Address { get; set; } = new List<Address>();
+    public ICollection<ShippingAddress>? ShippingAddress { get; set; } = new List<ShippingAddress>();
 
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
