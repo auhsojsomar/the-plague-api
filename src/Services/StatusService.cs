@@ -15,7 +15,6 @@ namespace The_Plague_Api.Services
 
     public async Task<Status> CreateAsync(Status status)
     {
-      status.DateCreated = DateTime.UtcNow;
       return await _statusRepository.CreateAsync(status);
     }
 

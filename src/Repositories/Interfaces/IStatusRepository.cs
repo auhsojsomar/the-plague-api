@@ -6,7 +6,7 @@ namespace The_Plague_Api.Repositories.Interfaces
   {
     Task<Status> CreateAsync(Status status);
     Task<IEnumerable<Status>> GetAllAsync();
-    Task<Status> GetByIdAsync(string id);
+    Task<Status?> GetByIdAsync(string id);
     Task<bool> UpdateAsync(string id, Status status);
     Task<bool> DeleteAsync(string id);
   }
