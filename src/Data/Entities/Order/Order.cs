@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using The_Plague_Api.Data.Entities.User;
 using The_Plague_Api.Data.Interface;
 
 namespace The_Plague_Api.Data.Entities.Order
@@ -15,10 +16,7 @@ namespace The_Plague_Api.Data.Entities.Order
     public required string UserId { get; set; }
 
     [Required]
-    public required string ProductId { get; set; }
-
-    [Required]
-    public required string VariantId { get; set; }
+    public required string CartId { get; set; }
 
     [Required]
     public required string StatusId { get; set; }
@@ -27,7 +25,12 @@ namespace The_Plague_Api.Data.Entities.Order
     public required string PaymentMethodId { get; set; }
 
     [Required]
-    public required int Quantity { get; set; }
+    public required string PaymentStatusId { get; set; }
+
+    [Required]
+    public required ShippingAddress ShippingAddress { get; set; }
+
+    public List<OrderItem> Items { get; set; } = new List<OrderItem>();
 
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 

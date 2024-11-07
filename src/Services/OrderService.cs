@@ -9,20 +9,20 @@ namespace The_Plague_Api.Services
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IStatusService _statusService;
+    private readonly IOrderStatusService _orderStatusService;
     private readonly IPaymentMethodService _paymentMethodService;
 
     public OrderService(
         IOrderRepository orderRepository,
         IProductRepository productRepository,
         IUserRepository userRepository,
-        IStatusService statusService,
+        IOrderStatusService orderStatusService,
         IPaymentMethodService paymentMethodService)
     {
       _orderRepository = orderRepository;
       _productRepository = productRepository;
       _userRepository = userRepository;
-      _statusService = statusService;
+      _orderStatusService = orderStatusService;
       _paymentMethodService = paymentMethodService;
     }
 
@@ -40,15 +40,17 @@ namespace The_Plague_Api.Services
     {
       await ValidateOrderAsync(order);
 
-      // Fetch the Status using StatusId to get the StatusKey
-      var status = await GetStatusAsync(order.StatusId);
+      // Fetch the Order Status using StatusId to get the StatusKey
+      var orderStatus = await GetStatusAsync(order.StatusId);
       var paymentMethod = await GetPaymentMethodAsync(order.PaymentMethodId);
 
-      // If Status is Paid, update the variant quantity
-      // Update the product quantity when the payment method is Cash on Delivery or the status is Paid
-      if (status.Key == 2 || paymentMethod.Key == 1)
+      // If Order Status is Paid or PaymentMethod is Cash on Delivery, update the variant quantity
+      if (orderStatus.Key == 2 || paymentMethod.Key == 1)
       {
-        await UpdateVariantQuantityAsync(order.ProductId, order.VariantId, order.Quantity);
+        foreach (var item in order.Items)
+        {
+          await UpdateVariantQuantityAsync(item.ProductId, item.VariantId, item.Quantity);
+        }
       }
 
       // Create and return the order
@@ -57,13 +59,16 @@ namespace The_Plague_Api.Services
 
     public async Task<bool> UpdateOrderAsync(string id, Order order)
     {
-      // Fetch the Status using StatusId to get the StatusKey
-      var status = await GetStatusAsync(order.StatusId);
+      // Fetch the Order Status using StatusId to get the StatusKey
+      var orderStatus = await GetStatusAsync(order.StatusId);
 
-      // If Status is Paid, update the variant quantity
-      if (status.Key == 2) // Paid Status
+      // If Order Status is Paid, update the variant quantity for each item
+      if (orderStatus.Key == 2) // Paid Order Status
       {
-        await UpdateVariantQuantityAsync(order.ProductId, order.VariantId, order.Quantity);
+        foreach (var item in order.Items)
+        {
+          await UpdateVariantQuantityAsync(item.ProductId, item.VariantId, item.Quantity);
+        }
       }
 
       // Update and return the result
@@ -79,29 +84,38 @@ namespace The_Plague_Api.Services
     private async Task ValidateOrderAsync(Order order)
     {
       await ValidateUserAsync(order.UserId);
-      await ValidateProductAndVariantAsync(order.ProductId, order.VariantId, order.Quantity);
+      await ValidateItemsAsync(order.Items);
       await ValidateStatusAsync(order.StatusId);
       await ValidatePaymentMethodAsync(order.PaymentMethodId);
     }
 
-    // Helper method to fetch and validate Status by ID
-    private async Task<Status> GetStatusAsync(string statusId)
+    // Helper method to validate each order item
+    private async Task ValidateItemsAsync(List<OrderItem> items)
     {
-      var status = await _statusService.GetByIdAsync(statusId);
-      if (status == null)
+      foreach (var item in items)
       {
-        throw new ApplicationException("Invalid Status.");
+        await ValidateProductAndVariantAsync(item.ProductId, item.VariantId, item.Quantity);
       }
-      return status;
     }
 
-    // Helper method to fetch and validate Status by ID
+    // Helper method to fetch and validate Order Status by ID
+    private async Task<OrderStatus> GetStatusAsync(string statusId)
+    {
+      var orderStatus = await _orderStatusService.GetByIdAsync(statusId);
+      if (orderStatus == null)
+      {
+        throw new ApplicationException("Invalid Order Status.");
+      }
+      return orderStatus;
+    }
+
+    // Helper method to fetch and validate PaymentMethod by ID
     private async Task<PaymentMethod> GetPaymentMethodAsync(string paymentMethodId)
     {
       var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
       if (paymentMethod == null)
       {
-        throw new ApplicationException("Invalid Status.");
+        throw new ApplicationException("Invalid PaymentMethod.");
       }
       return paymentMethod;
     }
@@ -116,23 +130,23 @@ namespace The_Plague_Api.Services
       }
     }
 
-    // Helper method to validate StatusKey is valid
+    // Helper method to validate Order Status
     private async Task ValidateStatusAsync(string statusId)
     {
-      var status = await _statusService.GetByIdAsync(statusId);
-      if (status == null)
+      var orderStatus = await _orderStatusService.GetByIdAsync(statusId);
+      if (orderStatus == null)
       {
-        throw new ArgumentException("Invalid StatusKey: Status does not exist.");
+        throw new ArgumentException("Invalid Order Status: Order Status does not exist.");
       }
     }
 
-    // Helper method to validate PaymentMethodId is valid
+    // Helper method to validate PaymentMethod
     private async Task ValidatePaymentMethodAsync(string paymentMethodId)
     {
       var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
       if (paymentMethod == null)
       {
-        throw new ArgumentException("Invalid PaymentMethodId: Payment method does not exist.");
+        throw new ArgumentException("Invalid PaymentMethod: Payment method does not exist.");
       }
     }
 
@@ -140,7 +154,7 @@ namespace The_Plague_Api.Services
     private async Task ValidateProductAndVariantAsync(string productId, string variantId, int quantity)
     {
       var product = await _productRepository.GetByIdAsync(productId)
-                      ?? throw new ArgumentException("Invalid ProductId: Product not found.");
+                    ?? throw new ArgumentException("Invalid ProductId: Product not found.");
 
       var variant = product.Variants.FirstOrDefault(v => v.Id == variantId);
       if (variant == null)
