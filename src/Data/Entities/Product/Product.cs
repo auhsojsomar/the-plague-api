@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using The_Plague_Api.Data.Interface;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -21,6 +20,10 @@ namespace The_Plague_Api.Data.Entities.Product
     public Image? Image { get; set; }
 
     [Required]
-    public ICollection<Variant> Variants { get; set; } = new List<Variant>(); // Ensure initialization
+    public ICollection<Variant> Variants { get; set; } = new List<Variant>();
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }

@@ -16,5 +16,9 @@ namespace The_Plague_Api.Data.Entities.Product
 
     [Required, MaxLength(7)]
     public required string HexCode { get; set; }
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }

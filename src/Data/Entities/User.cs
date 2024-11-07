@@ -26,5 +26,9 @@ namespace The_Plague_Api.Data.Entities
     [Required(ErrorMessage = "Password is required.")]
     [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
     public required string Password { get; set; }
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }

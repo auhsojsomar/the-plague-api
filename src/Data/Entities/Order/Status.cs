@@ -10,10 +10,14 @@ namespace The_Plague_Api.Data.Entities.Order
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; } = ObjectId.GenerateNewId().ToString();
+
     [Required]
     public required string Name { get; set; }
+
     public int isActive { get; set; } = 1;
+
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
     public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }

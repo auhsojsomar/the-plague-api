@@ -26,5 +26,9 @@ namespace The_Plague_Api.Data.Entities.Product
     public Discount? Discount { get; set; }
 
     public int Quantity { get; set; }
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }

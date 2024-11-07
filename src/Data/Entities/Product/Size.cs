@@ -13,5 +13,9 @@ namespace The_Plague_Api.Data.Entities.Product
 
     [Required, MaxLength(50)]
     public required string Name { get; set; }
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }

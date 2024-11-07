@@ -16,5 +16,9 @@ namespace The_Plague_Api.Data.Entities.Product
 
     [Required, Column(TypeName = "decimal(18,2)")]
     public decimal Value { get; set; }
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }
