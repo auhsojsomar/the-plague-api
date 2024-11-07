@@ -12,14 +12,14 @@ namespace The_Plague_Api.Repositories
   {
     private readonly IMongoDbService<OrderStatus> _statusService;
     private readonly KeyGeneratorService _keyGeneratorService;
-    private readonly IMongoCollection<OrderStatus> _statusCollection;
+    private readonly IMongoCollection<OrderStatus> _orderStatusCollection;
 
     public OrderStatusRepository(IMongoDatabase database, KeyGeneratorService keyGeneratorService)
     {
       const string statusCollection = "orderStatus";
 
       _statusService = new MongoDbService<OrderStatus>(database, statusCollection);
-      _statusCollection = database.GetCollection<OrderStatus>(statusCollection);
+      _orderStatusCollection = database.GetCollection<OrderStatus>(statusCollection);
       _keyGeneratorService = keyGeneratorService;
     }
 
@@ -37,7 +37,7 @@ namespace The_Plague_Api.Repositories
     public async Task<OrderStatus> CreateAsync(OrderStatus orderStatus)
     {
       await EnsureStatusNameIsUniqueAsync(orderStatus.Name);
-      orderStatus.Key = await _keyGeneratorService.GenerateUniqueKeyAsync("statusKey", _statusCollection, s => s.Key);
+      orderStatus.Key = await _keyGeneratorService.GenerateUniqueKeyAsync("orderStatusKey", _orderStatusCollection, s => s.Key);
       await _statusService.CreateAsync(orderStatus);
       return orderStatus;
     }
