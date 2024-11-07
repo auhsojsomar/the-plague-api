@@ -3,6 +3,7 @@ using The_Plague_Api.Data.Entities.Order;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
 using The_Plague_Api.Services;
+using static The_Plague_Api.Helpers.ValidationHelpers;
 
 namespace The_Plague_Api.Repositories
 {
@@ -45,13 +46,5 @@ namespace The_Plague_Api.Repositories
       ValidateId(id);
       return await _orderService.DeleteAsync(id);
     }
-
-    // Helper method to validate IDs
-    private static void ValidateId(string id)
-    {
-      if (string.IsNullOrEmpty(id))
-        throw new ArgumentException("ID cannot be null or empty.", nameof(id));
-    }
-
   }
 }

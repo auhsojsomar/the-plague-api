@@ -5,6 +5,7 @@ using The_Plague_Api.Services.Interfaces;
 using The_Plague_Api.Data.Dto;
 using The_Plague_Api.Helpers;
 using The_Plague_Api.Services;
+using static The_Plague_Api.Helpers.ValidationHelpers;
 
 namespace The_Plague_Api.Repositories
 {
@@ -98,13 +99,6 @@ namespace The_Plague_Api.Repositories
     {
       await _sizeService.CreateAsync(size);
       return size;
-    }
-
-    // Helper method to validate IDs
-    private static void ValidateId(string id)
-    {
-      if (string.IsNullOrEmpty(id))
-        throw new ArgumentException("ID cannot be null or empty.", nameof(id));
     }
 
     // Helper method to validate names
