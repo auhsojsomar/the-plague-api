@@ -1,4 +1,4 @@
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.User;
 using The_Plague_Api.Services.Interfaces;
 using MongoDB.Driver;
 using The_Plague_Api.Services;
