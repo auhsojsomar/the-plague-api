@@ -30,5 +30,8 @@ public class ProductProfile : Profile
     CreateMap<ColorDto, Color>()
         .ForMember(dest => dest.Id, opt => opt.Ignore())
         .ReverseMap();
+
+    // Image mappings
+    CreateMap<ImageDto, Image>().ReverseMap();
   }
 }
