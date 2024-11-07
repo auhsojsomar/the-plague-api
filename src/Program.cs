@@ -61,6 +61,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.AddSingleton<IPaymentMethodRepository, PaymentMethodRepository>();
 
   // Register services
+  builder.Services.AddSingleton<KeyGeneratorService>();
   builder.Services.AddScoped<IProductService, ProductService>();
   builder.Services.AddScoped<IDiscountService, DiscountService>();
   builder.Services.AddScoped<IUserService, UserService>();
@@ -74,8 +75,15 @@ void ConfigureServices(WebApplicationBuilder builder)
     options.AddPolicy("AllowLocalhost", builder =>
       {
         builder.WithOrigins("http://localhost:3000")
-                 .AllowAnyMethod()
-                 .AllowAnyHeader();
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+      });
+
+    options.AddPolicy("AllowProduction", builder =>
+      {
+        builder.WithOrigins("https://the-plague-clothing-dev.netlify.app")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
       });
   });
 
