@@ -23,7 +23,7 @@ namespace The_Plague_Api.Services
       return await _statusRepository.GetAllAsync();
     }
 
-    public async Task<Status> GetByIdAsync(string id)
+    public async Task<Status?> GetByIdAsync(string id)
     {
       return await _statusRepository.GetByIdAsync(id);
     }
