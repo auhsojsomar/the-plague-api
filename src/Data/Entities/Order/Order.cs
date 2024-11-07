@@ -19,7 +19,7 @@ namespace The_Plague_Api.Data.Entities.Order
     public required string CartId { get; set; }
 
     [Required]
-    public required string StatusId { get; set; }
+    public required string OrderStatusId { get; set; }
 
     [Required]
     public required string PaymentMethodId { get; set; }
