@@ -60,6 +60,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.AddSingleton<IOrderStatusRepository, OrderStatusRepository>();
   builder.Services.AddSingleton<IPaymentMethodRepository, PaymentMethodRepository>();
   builder.Services.AddSingleton<IPaymentStatusRepository, PaymentStatusRepository>();
+  builder.Services.AddSingleton<ICartRepository, CartRepository>();
 
   // Register services
   builder.Services.AddSingleton<KeyGeneratorService>();
@@ -70,6 +71,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.AddScoped<IOrderStatusService, OrderStatusService>();
   builder.Services.AddScoped<IPaymentMethodService, PaymentMethodService>();
   builder.Services.AddScoped<IPaymentStatusService, PaymentStatusService>();
+  builder.Services.AddScoped<ICartService, CartService>();
 
   // Add CORS
   builder.Services.AddCors(options =>
