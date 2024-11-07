@@ -45,7 +45,7 @@ namespace The_Plague_Api.Services
       {
         Name = productDto.Name,
         Description = productDto.Description,
-        Image = productDto.Image,
+        Image = _mapper.Map<Image>(productDto.Image),
         Variants = await CreateVariantsAsync(productDto.Variants)
       };
 
