@@ -4,7 +4,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace The_Plague_Api.Data.Entities.User
 {
-  public class Address
+  public class ShippingAddress
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
@@ -16,7 +16,7 @@ namespace The_Plague_Api.Data.Entities.User
     public required string FullName { get; set; }
 
     [Required]
-    public required string FullAddress { get; set; }
+    public required string Address { get; set; }
 
     [Required]
     public required string ContactNumber { get; set; }

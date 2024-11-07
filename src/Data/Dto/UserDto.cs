@@ -10,6 +10,6 @@ namespace The_Plague_Api.Data.Dto
 
     public required string FullName { get; set; }
 
-    public required ICollection<Address> Address { get; set; }
+    public required ICollection<ShippingAddress> ShippingAddress { get; set; }
   }
 }
