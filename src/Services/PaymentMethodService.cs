@@ -12,29 +12,57 @@ namespace The_Plague_Api.Services
       _paymentMethodRepository = paymentMethodRepository;
     }
 
-    public Task<IEnumerable<PaymentMethod>> GetAllPaymentMethodsAsync()
+    public async Task<IEnumerable<PaymentMethod>> GetAllPaymentMethodsAsync()
     {
-      return _paymentMethodRepository.GetAllAsync();
+      return await _paymentMethodRepository.GetAllAsync();
     }
 
-    public Task<PaymentMethod> GetPaymentMethodByIdAsync(string id)
+    public async Task<PaymentMethod> GetPaymentMethodByIdAsync(string id)
     {
-      return _paymentMethodRepository.GetByIdAsync(id);
+      // Validate if the payment method exists
+      var paymentMethod = await _paymentMethodRepository.GetByIdAsync(id);
+      if (paymentMethod == null)
+      {
+        throw new KeyNotFoundException($"PaymentMethod with ID '{id}' was not found.");
+      }
+      return paymentMethod;
     }
 
-    public Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethod paymentMethod)
+    public async Task<PaymentMethod> CreatePaymentMethodAsync(PaymentMethod paymentMethod)
     {
-      return _paymentMethodRepository.CreateAsync(paymentMethod);
+      // Ensure the name is unique before creating the payment method
+      await EnsurePaymentMethodNameIsUniqueAsync(paymentMethod.Name);
+      return await _paymentMethodRepository.CreateAsync(paymentMethod);
     }
 
-    public Task<bool> UpdatePaymentMethodAsync(string id, PaymentMethod paymentMethod)
+    public async Task<bool> UpdatePaymentMethodAsync(string id, PaymentMethod paymentMethod)
     {
-      return _paymentMethodRepository.UpdateAsync(id, paymentMethod);
+      // Validate if the payment method exists
+      await EnsurePaymentMethodNameIsUniqueAsync(paymentMethod.Name, id);
+      paymentMethod.Id = id;
+      paymentMethod.DateModified = DateTime.UtcNow;
+      return await _paymentMethodRepository.UpdateAsync(id, paymentMethod);
     }
 
-    public Task<bool> DeletePaymentMethodAsync(string id)
+    public async Task<bool> DeletePaymentMethodAsync(string id)
     {
-      return _paymentMethodRepository.DeleteAsync(id);
+      // Validate if the payment method exists
+      var paymentMethod = await GetPaymentMethodByIdAsync(id);
+      if (paymentMethod == null)
+      {
+        throw new KeyNotFoundException($"PaymentMethod with ID '{id}' was not found.");
+      }
+      return await _paymentMethodRepository.DeleteAsync(id);
+    }
+
+    // Helper method to ensure name uniqueness
+    private async Task EnsurePaymentMethodNameIsUniqueAsync(string name, string? excludeId = null)
+    {
+      var existingPaymentMethod = await _paymentMethodRepository.GetByNameAsync(name);
+      if (existingPaymentMethod != null && existingPaymentMethod.Id != excludeId)
+      {
+        throw new ArgumentException("A payment method with this name already exists.");
+      }
     }
   }
 }

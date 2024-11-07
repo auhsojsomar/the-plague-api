@@ -1,16 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using The_Plague_Api.Data.Entities.Order;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using The_Plague_Api.Services;
+using The_Plague_Api.Services.Interfaces;
 
 [Route("api/[controller]")]
 [ApiController]
 public class PaymentMethodController : ControllerBase
 {
-  private readonly PaymentMethodService _paymentMethodService;
+  private readonly IPaymentMethodService _paymentMethodService;
 
-  public PaymentMethodController(PaymentMethodService paymentMethodService)
+  public PaymentMethodController(IPaymentMethodService paymentMethodService)
   {
     _paymentMethodService = paymentMethodService;
   }

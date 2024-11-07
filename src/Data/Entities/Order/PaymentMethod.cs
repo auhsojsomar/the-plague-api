@@ -11,6 +11,8 @@ namespace The_Plague_Api.Data.Entities.Order
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
+    public int Key { get; set; }
+
     [Required]
     public required string Name { get; set; }
 
