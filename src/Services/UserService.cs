@@ -1,6 +1,6 @@
 using AutoMapper;
 using The_Plague_Api.Data.Dto;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.User;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
 
@@ -17,16 +17,16 @@ namespace The_Plague_Api.Services
       _mapper = mapper;
     }
 
-    public async Task<IEnumerable<UserEmailDto>> GetAllUsersAsync()
+    public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
     {
       var users = await _userRepository.GetAllAsync();
-      return _mapper.Map<IEnumerable<UserEmailDto>>(users);
+      return _mapper.Map<IEnumerable<UserDto>>(users);
     }
 
-    public async Task<UserEmailDto?> GetUserByIdAsync(string id)
+    public async Task<UserDto?> GetUserByIdAsync(string id)
     {
       var user = await _userRepository.GetByIdAsync(id);
-      return _mapper.Map<UserEmailDto>(user);
+      return _mapper.Map<UserDto>(user);
     }
 
     public async Task<User> RegisterUserAsync(User user)
@@ -70,7 +70,7 @@ namespace The_Plague_Api.Services
       }
     }
 
-    public async Task<bool> UpdateUserAsync(string id, UserEmailDto userDto)
+    public async Task<bool> UpdateUserAsync(string id, UserDto userDto)
     {
       var user = await _userRepository.GetByIdAsync(id);
       if (user == null)

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using The_Plague_Api.Data.Dto;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.User;
 using The_Plague_Api.Services.Authentication;
 using The_Plague_Api.Services.Interfaces;
 
@@ -109,7 +109,7 @@ namespace The_Plague_Api.Controllers
     // Updates a user's email or other details.
     [Authorize] // Requires authorization to update user information.
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateAsync(string id, [FromBody] UserEmailDto userDto)
+    public async Task<IActionResult> UpdateAsync(string id, [FromBody] UserDto userDto)
     {
       if (!ModelState.IsValid)
         return BadRequest(ModelState); // Returns 400 for invalid input.

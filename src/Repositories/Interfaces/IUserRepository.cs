@@ -1,5 +1,4 @@
-using The_Plague_Api.Data.Dto;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.User;
 
 namespace The_Plague_Api.Repositories.Interfaces
 {

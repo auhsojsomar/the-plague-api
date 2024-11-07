@@ -1,15 +1,15 @@
 using The_Plague_Api.Data.Dto;
-using The_Plague_Api.Data.Entities;
+using The_Plague_Api.Data.Entities.User;
 
 namespace The_Plague_Api.Services.Interfaces
 {
   public interface IUserService
   {
-    Task<IEnumerable<UserEmailDto>> GetAllUsersAsync();
-    Task<UserEmailDto?> GetUserByIdAsync(string id);
+    Task<IEnumerable<UserDto>> GetAllUsersAsync();
+    Task<UserDto?> GetUserByIdAsync(string id);
     Task<User> RegisterUserAsync(User user);
     Task<User?> LoginUserAsync(UserLoginDto userLoginDto);
-    Task<bool> UpdateUserAsync(string id, UserEmailDto userDto);
+    Task<bool> UpdateUserAsync(string id, UserDto userDto);
     Task<bool> DeleteUserAsync(string id);
   }
 }
