@@ -1,6 +1,8 @@
 using The_Plague_Api.Data.Entities.Order;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
+using static The_Plague_Api.Helpers.ValidationHelpers;
+using static The_Plague_Api.Helpers.StockHelpers;
 
 namespace The_Plague_Api.Services
 {
@@ -9,21 +11,30 @@ namespace The_Plague_Api.Services
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IOrderStatusService _orderStatusService;
-    private readonly IPaymentMethodService _paymentMethodService;
+    private readonly ICartRepository _cartRepository;
+    private readonly IPaymentStatusRepository _paymentStatusRepository;
+    private readonly IPaymentMethodRepository _paymentMethodRepository;
+    private readonly IOrderStatusRepository _orderStatusRepository;
+    private readonly ICartService _cartService;
 
     public OrderService(
         IOrderRepository orderRepository,
         IProductRepository productRepository,
         IUserRepository userRepository,
-        IOrderStatusService orderStatusService,
-        IPaymentMethodService paymentMethodService)
+        ICartRepository cartRepository,
+        IPaymentStatusRepository paymentStatusRepository,
+        IPaymentMethodRepository paymentMethodRepository,
+        IOrderStatusRepository orderStatusRepository,
+        ICartService cartService)
     {
       _orderRepository = orderRepository;
       _productRepository = productRepository;
       _userRepository = userRepository;
-      _orderStatusService = orderStatusService;
-      _paymentMethodService = paymentMethodService;
+      _cartRepository = cartRepository;
+      _paymentStatusRepository = paymentStatusRepository;
+      _paymentMethodRepository = paymentMethodRepository;
+      _orderStatusRepository = orderStatusRepository;
+      _cartService = cartService;
     }
 
     public async Task<IEnumerable<Order>> GetAllOrdersAsync()
@@ -33,168 +44,58 @@ namespace The_Plague_Api.Services
 
     public async Task<Order?> GetOrderByIdAsync(string id)
     {
+      ValidateId(id);
       return await _orderRepository.GetByIdAsync(id);
     }
 
     public async Task<Order> CreateOrderAsync(Order order)
     {
-      await ValidateOrderAsync(order);
-
-      // Fetch the Order Status using StatusId to get the StatusKey
-      var orderStatus = await GetStatusAsync(order.StatusId);
-      var paymentMethod = await GetPaymentMethodAsync(order.PaymentMethodId);
-
-      // If Order Status is Paid or PaymentMethod is Cash on Delivery, update the variant quantity
-      if (orderStatus.Key == 2 || paymentMethod.Key == 1)
-      {
-        foreach (var item in order.Items)
-        {
-          await UpdateVariantQuantityAsync(item.ProductId, item.VariantId, item.Quantity);
-        }
-      }
-
-      // Create and return the order
+      await ValidateEntityIdsAsync(order);
+      await UpdateStockAndRemoveFromCartOnPayment(order);
       return await _orderRepository.CreateAsync(order);
     }
 
     public async Task<bool> UpdateOrderAsync(string id, Order order)
     {
-      // Fetch the Order Status using StatusId to get the StatusKey
-      var orderStatus = await GetStatusAsync(order.StatusId);
-
-      // If Order Status is Paid, update the variant quantity for each item
-      if (orderStatus.Key == 2) // Paid Order Status
-      {
-        foreach (var item in order.Items)
-        {
-          await UpdateVariantQuantityAsync(item.ProductId, item.VariantId, item.Quantity);
-        }
-      }
-
-      // Update and return the result
+      ValidateId(id);
+      await ValidateEntityIdsAsync(order);
+      await UpdateStockAndRemoveFromCartOnPayment(order);
       return await _orderRepository.UpdateAsync(id, order);
     }
 
     public async Task<bool> DeleteOrderAsync(string id)
     {
+      ValidateId(id);
       return await _orderRepository.DeleteAsync(id);
     }
 
-    // Helper method to validate Order details
-    private async Task ValidateOrderAsync(Order order)
+    private async Task ValidateEntityIdsAsync(Order order)
     {
-      await ValidateUserAsync(order.UserId);
-      await ValidateItemsAsync(order.Items);
-      await ValidateStatusAsync(order.StatusId);
-      await ValidatePaymentMethodAsync(order.PaymentMethodId);
+      await ValidateEntityExistenceAsync(order.UserId, _userRepository, "UserId");
+      await ValidateEntityExistenceAsync(order.CartId, _cartRepository, "CartId");
+      await ValidateEntityExistenceAsync(order.OrderStatusId, _orderStatusRepository, "OrderStatusId");
+      await ValidateEntityExistenceAsync(order.PaymentMethodId, _paymentMethodRepository, "PaymentMethodId");
+      await ValidateEntityExistenceAsync(order.PaymentStatusId, _paymentStatusRepository, "PaymentStatusId");
     }
 
-    // Helper method to validate each order item
-    private async Task ValidateItemsAsync(List<OrderItem> items)
+    private async Task UpdateStockAndRemoveFromCartOnPayment(Order order)
     {
-      foreach (var item in items)
+      var paymentStatus = await _paymentStatusRepository.GetByIdAsync(order.PaymentStatusId);
+      if (paymentStatus == null)
       {
-        await ValidateProductAndVariantAsync(item.ProductId, item.VariantId, item.Quantity);
-      }
-    }
-
-    // Helper method to fetch and validate Order Status by ID
-    private async Task<OrderStatus> GetStatusAsync(string statusId)
-    {
-      var orderStatus = await _orderStatusService.GetByIdAsync(statusId);
-      if (orderStatus == null)
-      {
-        throw new ApplicationException("Invalid Order Status.");
-      }
-      return orderStatus;
-    }
-
-    // Helper method to fetch and validate PaymentMethod by ID
-    private async Task<PaymentMethod> GetPaymentMethodAsync(string paymentMethodId)
-    {
-      var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
-      if (paymentMethod == null)
-      {
-        throw new ApplicationException("Invalid PaymentMethod.");
-      }
-      return paymentMethod;
-    }
-
-    // Helper method to validate if UserId is valid
-    private async Task ValidateUserAsync(string userId)
-    {
-      var user = await _userRepository.GetByIdAsync(userId);
-      if (user == null)
-      {
-        throw new ArgumentException("Invalid UserId: User does not exist.");
-      }
-    }
-
-    // Helper method to validate Order Status
-    private async Task ValidateStatusAsync(string statusId)
-    {
-      var orderStatus = await _orderStatusService.GetByIdAsync(statusId);
-      if (orderStatus == null)
-      {
-        throw new ArgumentException("Invalid Order Status: Order Status does not exist.");
-      }
-    }
-
-    // Helper method to validate PaymentMethod
-    private async Task ValidatePaymentMethodAsync(string paymentMethodId)
-    {
-      var paymentMethod = await _paymentMethodService.GetPaymentMethodByIdAsync(paymentMethodId);
-      if (paymentMethod == null)
-      {
-        throw new ArgumentException("Invalid PaymentMethod: Payment method does not exist.");
-      }
-    }
-
-    // Helper method to validate if ProductId and VariantId are valid
-    private async Task ValidateProductAndVariantAsync(string productId, string variantId, int quantity)
-    {
-      var product = await _productRepository.GetByIdAsync(productId)
-                    ?? throw new ArgumentException("Invalid ProductId: Product not found.");
-
-      var variant = product.Variants.FirstOrDefault(v => v.Id == variantId);
-      if (variant == null)
-      {
-        throw new ArgumentException("Invalid VariantId: Variant does not exist within the specified Product.");
+        throw new ApplicationException("Invalid Payment Status.");
       }
 
-      if (quantity < 1)
+      if (paymentStatus.Key == 2) // Assuming 2 is the 'Paid' status
       {
-        throw new ArgumentException("Quantity must be at least 1.");
+        foreach (var item in order.Items)
+        {
+          await UpdateVariantQuantityAsync(item.ProductId, item.VariantId, item.Quantity, _productRepository);
+        }
+
+        // Remove only the ordered items from the user's cart
+        await _cartService.RemoveOrderedItemsFromCartAsync(order.UserId, order.Items);
       }
-
-      if (quantity > variant.Quantity)
-      {
-        throw new ArgumentException($"Quantity exceeds the available stock for this variant. Available quantity: {variant.Quantity}.");
-      }
-    }
-
-    // Method to reduce the variant quantity based on order quantity
-    private async Task UpdateVariantQuantityAsync(string productId, string variantId, int orderQuantity)
-    {
-      var product = await _productRepository.GetByIdAsync(productId)
-                    ?? throw new ArgumentException("Invalid ProductId: Product not found.");
-
-      var variant = product.Variants.FirstOrDefault(v => v.Id == variantId);
-      if (variant == null)
-      {
-        throw new ArgumentException("Invalid VariantId: Variant does not exist within the specified Product.");
-      }
-
-      if (variant.Quantity < orderQuantity)
-      {
-        throw new ArgumentException("Order quantity exceeds available stock for the variant.");
-      }
-
-      // Update the variant quantity
-      variant.Quantity -= orderQuantity;
-
-      // Persist the updated product with the modified variant quantity
-      await _productRepository.UpdateAsync(productId, product);
     }
   }
 }
