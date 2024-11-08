@@ -20,7 +20,7 @@ namespace The_Plague_Api.Controllers
     {
       var cart = await _cartService.GetCartByIdAsync(id);
       if (cart == null)
-        return NotFound();
+        return NotFound("Cart not found.");
 
       return Ok(cart);
     }
@@ -30,7 +30,7 @@ namespace The_Plague_Api.Controllers
     {
       var cart = await _cartService.GetCartByUserIdAsync(userId);
       if (cart == null)
-        return NotFound();
+        return NotFound("Cart not found.");
 
       return Ok(cart);
     }
@@ -38,8 +38,16 @@ namespace The_Plague_Api.Controllers
     [HttpPost]
     public async Task<ActionResult<Cart>> CreateCart([FromBody] Cart cart)
     {
-      var createdCart = await _cartService.CreateCartAsync(cart);
-      return CreatedAtAction(nameof(GetCartById), new { id = createdCart.Id }, createdCart);
+      try
+      {
+        var createdCart = await _cartService.CreateCartAsync(cart);
+
+        return CreatedAtAction(nameof(GetCartById), new { id = createdCart.Id }, createdCart);
+      }
+      catch (ArgumentException ex)
+      {
+        return BadRequest(ex.Message);
+      }
     }
 
     [HttpPut("{id}")]
