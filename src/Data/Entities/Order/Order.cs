@@ -12,11 +12,9 @@ namespace The_Plague_Api.Data.Entities.Order
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; } = ObjectId.GenerateNewId().ToString();
 
-    [Required]
-    public required string UserId { get; set; }
+    public string? UserId { get; set; }
 
-    [Required]
-    public required string CartId { get; set; }
+    public string? CartId { get; set; }
 
     [Required]
     public required string OrderStatusId { get; set; }

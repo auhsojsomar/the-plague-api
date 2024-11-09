@@ -10,8 +10,6 @@ namespace The_Plague_Api.Services
   {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly ICartRepository _cartRepository;
     private readonly IPaymentStatusRepository _paymentStatusRepository;
     private readonly IPaymentMethodRepository _paymentMethodRepository;
     private readonly IOrderStatusRepository _orderStatusRepository;
@@ -20,8 +18,6 @@ namespace The_Plague_Api.Services
     public OrderService(
         IOrderRepository orderRepository,
         IProductRepository productRepository,
-        IUserRepository userRepository,
-        ICartRepository cartRepository,
         IPaymentStatusRepository paymentStatusRepository,
         IPaymentMethodRepository paymentMethodRepository,
         IOrderStatusRepository orderStatusRepository,
@@ -29,8 +25,6 @@ namespace The_Plague_Api.Services
     {
       _orderRepository = orderRepository;
       _productRepository = productRepository;
-      _userRepository = userRepository;
-      _cartRepository = cartRepository;
       _paymentStatusRepository = paymentStatusRepository;
       _paymentMethodRepository = paymentMethodRepository;
       _orderStatusRepository = orderStatusRepository;
@@ -71,8 +65,6 @@ namespace The_Plague_Api.Services
 
     private async Task ValidateEntityIdsAsync(Order order)
     {
-      await ValidateEntityExistenceAsync(order.UserId, _userRepository, "UserId");
-      await ValidateEntityExistenceAsync(order.CartId, _cartRepository, "CartId");
       await ValidateEntityExistenceAsync(order.OrderStatusId, _orderStatusRepository, "OrderStatusId");
       await ValidateEntityExistenceAsync(order.PaymentMethodId, _paymentMethodRepository, "PaymentMethodId");
       await ValidateEntityExistenceAsync(order.PaymentStatusId, _paymentStatusRepository, "PaymentStatusId");
@@ -93,8 +85,9 @@ namespace The_Plague_Api.Services
           await UpdateVariantQuantityAsync(item.ProductId, item.VariantId, item.Quantity, _productRepository);
         }
 
+
         // Remove only the ordered items from the user's cart
-        await _cartService.RemoveOrderedItemsFromCartAsync(order.UserId, order.Items);
+        if (order.UserId != null) await _cartService.RemoveOrderedItemsFromCartAsync(order.UserId, order.Items);
       }
     }
   }
