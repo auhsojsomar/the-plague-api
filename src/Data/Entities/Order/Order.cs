@@ -28,6 +28,8 @@ namespace The_Plague_Api.Data.Entities.Order
     [Required]
     public required ShippingAddress ShippingAddress { get; set; }
 
+    public decimal? ShippingFee { get; set; } = 100;
+
     public List<OrderItem> Items { get; set; } = new List<OrderItem>();
 
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
