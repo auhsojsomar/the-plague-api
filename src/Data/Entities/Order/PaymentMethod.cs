@@ -16,6 +16,8 @@ namespace The_Plague_Api.Data.Entities.Order
     [Required]
     public required string Name { get; set; }
 
+    public string? Label { get; set; }
+
     public int IsActive { get; set; } = 1;
 
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
