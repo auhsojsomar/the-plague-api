@@ -65,26 +65,23 @@ namespace The_Plague_Api.Services
 
     private async Task ValidateEntityIdsAsync(Order order)
     {
-      await ValidateEntityExistenceAsync(order.OrderStatusId, _orderStatusRepository, "OrderStatusId");
-      await ValidateEntityExistenceAsync(order.PaymentMethodId, _paymentMethodRepository, "PaymentMethodId");
-      await ValidateEntityExistenceAsync(order.PaymentStatusId, _paymentStatusRepository, "PaymentStatusId");
+      foreach (var item in order.Items)
+      {
+        await ValidateProductAndVariantAsync(item.ProductId, item.VariantId, _productRepository);
+      }
+      await ValidateEntityExistenceByKeyAsync(order.OrderStatusKey, _orderStatusRepository, "OrderStatus");
+      await ValidateEntityExistenceByKeyAsync(order.PaymentMethodKey, _paymentMethodRepository, "PaymentMethod");
+      await ValidateEntityExistenceByKeyAsync(order.PaymentStatusKey, _paymentStatusRepository, "PaymentStatus");
     }
 
     private async Task UpdateStockAndRemoveFromCartOnPayment(Order order)
     {
-      var paymentStatus = await _paymentStatusRepository.GetByIdAsync(order.PaymentStatusId);
-      if (paymentStatus == null)
-      {
-        throw new ApplicationException("Invalid Payment Status.");
-      }
-
-      if (paymentStatus.Key == 2) // Assuming 2 is the 'Paid' status
+      if (order.PaymentStatusKey == 2) // Assuming 2 is the 'Paid' status
       {
         foreach (var item in order.Items)
         {
           await UpdateVariantQuantityAsync(item.ProductId, item.VariantId, item.Quantity, _productRepository);
         }
-
 
         // Remove only the ordered items from the user's cart
         if (order.UserId != null) await _cartService.RemoveOrderedItemsFromCartAsync(order.UserId, order.Items);

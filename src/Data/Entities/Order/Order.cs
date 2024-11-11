@@ -16,21 +16,22 @@ namespace The_Plague_Api.Data.Entities.Order
 
     public string? CartId { get; set; }
 
-    [Required]
-    public required string OrderStatusId { get; set; }
+    public int OrderStatusKey { get; set; } = 1;
+
+    public int PaymentMethodKey { get; set; } = 1;
+
+    public int PaymentStatusKey { get; set; } = 1;
 
     [Required]
-    public required string PaymentMethodId { get; set; }
-
-    [Required]
-    public required string PaymentStatusId { get; set; }
+    public required string PaymentTransactionFile { get; set; }
 
     [Required]
     public required ShippingAddress ShippingAddress { get; set; }
 
     public decimal? ShippingFee { get; set; } = 100;
 
-    public List<OrderItem> Items { get; set; } = new List<OrderItem>();
+    [Required]
+    public required List<OrderItem> Items { get; set; } = new List<OrderItem>();
 
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
