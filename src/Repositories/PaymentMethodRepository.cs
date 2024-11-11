@@ -32,6 +32,12 @@ namespace The_Plague_Api.Repositories
       return await _paymentMethodService.GetAsync(id);
     }
 
+    public async Task<PaymentMethod?> GetByKeyAsync(int key)
+    {
+      var filter = Builders<PaymentMethod>.Filter.Eq(x => x.Key, key);
+      return await _paymentMethodService.GetAsync(filter);
+    }
+
     public async Task<PaymentMethod> CreateAsync(PaymentMethod paymentMethod)
     {
       await EnsurePaymentMethodNameIsUniqueAsync(paymentMethod.Name);

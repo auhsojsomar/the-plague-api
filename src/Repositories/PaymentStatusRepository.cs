@@ -34,6 +34,12 @@ namespace The_Plague_Api.Repositories
       return await _statusService.GetAsync(id);
     }
 
+    public async Task<PaymentStatus?> GetByKeyAsync(int key)
+    {
+      var filter = Builders<PaymentStatus>.Filter.Eq(x => x.Key, key);
+      return await _statusService.GetAsync(filter);
+    }
+
     public async Task<PaymentStatus> CreateAsync(PaymentStatus paymentStatus)
     {
       await EnsureStatusNameIsUniqueAsync(paymentStatus.Name);
