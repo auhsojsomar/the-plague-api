@@ -25,6 +25,15 @@ namespace The_Plague_Api.Helpers
       }
     }
 
+    public static async Task ValidateEntityExistenceByKeyAsync(int entityKey, dynamic repository, string entityName)
+    {
+      var entity = await repository.GetByKeyAsync(entityKey);
+      if (entity == null)
+      {
+        throw new ArgumentException($"Invalid {entityName}: {entityName} does not exist.");
+      }
+    }
+
     // Method to validate user existence
     public static async Task ValidateUserAsync(string userId, IUserRepository userRepository)
     {
