@@ -23,6 +23,11 @@ namespace The_Plague_Api.Services
       return await _shippingFeeRepository.GetByIdAsync(id);
     }
 
+    public async Task<ShippingFee?> GetShippingFeeByNameAsync(string name)
+    {
+      return await _shippingFeeRepository.GetByNameAsync(name);
+    }
+
     public async Task<ShippingFee> CreateShippingFeeAsync(ShippingFee shippingFee)
     {
       return await _shippingFeeRepository.CreateAsync(shippingFee);
