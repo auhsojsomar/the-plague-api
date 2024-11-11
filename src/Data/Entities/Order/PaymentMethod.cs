@@ -16,6 +16,9 @@ namespace The_Plague_Api.Data.Entities.Order
     [Required]
     public required string Name { get; set; }
 
+    [Required]
+    public required string ImageUrl { get; set; }
+
     public string? Label { get; set; }
 
     public int IsActive { get; set; } = 1;
