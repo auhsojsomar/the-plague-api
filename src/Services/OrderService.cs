@@ -3,6 +3,8 @@ using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
 using static The_Plague_Api.Helpers.ValidationHelpers;
 using static The_Plague_Api.Helpers.StockHelpers;
+using AutoMapper;
+using The_Plague_Api.Data.Dto;
 
 namespace The_Plague_Api.Services
 {
@@ -13,7 +15,9 @@ namespace The_Plague_Api.Services
     private readonly IPaymentStatusRepository _paymentStatusRepository;
     private readonly IPaymentMethodRepository _paymentMethodRepository;
     private readonly IOrderStatusRepository _orderStatusRepository;
+    private readonly IShippingFeeRepository _shippingFeeRepository;
     private readonly ICartService _cartService;
+    private readonly IMapper _mapper;
 
     public OrderService(
         IOrderRepository orderRepository,
@@ -21,14 +25,18 @@ namespace The_Plague_Api.Services
         IPaymentStatusRepository paymentStatusRepository,
         IPaymentMethodRepository paymentMethodRepository,
         IOrderStatusRepository orderStatusRepository,
-        ICartService cartService)
+        IShippingFeeRepository shippingFeeRepository,
+        ICartService cartService,
+        IMapper mapper)
     {
       _orderRepository = orderRepository;
       _productRepository = productRepository;
       _paymentStatusRepository = paymentStatusRepository;
       _paymentMethodRepository = paymentMethodRepository;
       _orderStatusRepository = orderStatusRepository;
+      _shippingFeeRepository = shippingFeeRepository;
       _cartService = cartService;
+      _mapper = mapper;
     }
 
     public async Task<IEnumerable<Order>> GetAllOrdersAsync()
@@ -44,8 +52,16 @@ namespace The_Plague_Api.Services
 
     public async Task<Order> CreateOrderAsync(Order order)
     {
+      // Validate entity IDs (Products, Variants, etc.)
       await ValidateEntityIdsAsync(order);
+
+      // Calculate the total fee (including the subtotal and shipping fee)
+      await UpdateTotalPriceAsync(order);
+
+      // Update stock and remove from the cart on payment
       await UpdateStockAndRemoveFromCartOnPayment(order);
+
+      // Create the order and persist it to the repository
       return await _orderRepository.CreateAsync(order);
     }
 
@@ -53,6 +69,7 @@ namespace The_Plague_Api.Services
     {
       ValidateId(id);
       await ValidateEntityIdsAsync(order);
+      await UpdateTotalPriceAsync(order);
       await UpdateStockAndRemoveFromCartOnPayment(order);
       return await _orderRepository.UpdateAsync(id, order);
     }
@@ -86,6 +103,51 @@ namespace The_Plague_Api.Services
         // Remove only the ordered items from the user's cart
         if (order.UserId != null) await _cartService.RemoveOrderedItemsFromCartAsync(order.UserId, order.Items);
       }
+    }
+
+    public async Task<decimal> CalculateFee(Order order)
+    {
+      decimal subTotal = 0;
+
+      var shippingFee = await _shippingFeeRepository.GetByKeyAsync(order.ShippingFeeKey);
+
+      foreach (var item in order.Items)
+      {
+        // Retrieve the product by ProductId
+        var product = await _productRepository.GetByIdAsync(item.ProductId);
+        if (product == null)
+        {
+          throw new ArgumentException($"Invalid ProductId: Product not found.");
+        }
+
+        // Retrieve the variant by VariantId
+        var variant = product.Variants.FirstOrDefault(v => v.Id == item.VariantId);
+        if (variant == null)
+        {
+          throw new ArgumentException($"Invalid VariantId: Variant not found.");
+        }
+
+        // Use AutoMapper to map Variant to VariantDto
+        var variantDto = _mapper.Map<VariantDto>(variant);
+
+        // Use SalePrice from VariantDto if available
+        decimal itemPrice = variantDto.SalePrice ?? variantDto.Price; // Use SalePrice if available, otherwise use the Price
+
+        // Calculate the total price for this order item
+        subTotal += itemPrice * item.Quantity;
+      }
+
+      if (shippingFee != null)
+      {
+        return subTotal + shippingFee.Cost;
+      }
+      return subTotal;
+    }
+
+    public async Task UpdateTotalPriceAsync(Order order)
+    {
+      decimal? totalPrice = await CalculateFee(order);
+      order.SetTotalPrice(totalPrice);
     }
   }
 }

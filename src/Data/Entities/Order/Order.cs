@@ -22,13 +22,15 @@ namespace The_Plague_Api.Data.Entities.Order
 
     public int PaymentStatusKey { get; set; } = 1;
 
+    public int ShippingFeeKey { get; set; } = 1;
+
     [Required]
     public required string PaymentTransactionFile { get; set; }
 
     [Required]
     public required ShippingAddress ShippingAddress { get; set; }
 
-    public decimal? ShippingFee { get; set; } = 100;
+    public decimal? TotalPrice { get; private set; }
 
     [Required]
     public required List<OrderItem> Items { get; set; } = new List<OrderItem>();
@@ -36,5 +38,11 @@ namespace The_Plague_Api.Data.Entities.Order
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
     public DateTime DateModified { get; set; } = DateTime.UtcNow;
+
+    // Method to set TotalPrice
+    public void SetTotalPrice(decimal? totalPrice)
+    {
+      TotalPrice = totalPrice;
+    }
   }
 }

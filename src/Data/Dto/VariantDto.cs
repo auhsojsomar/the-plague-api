@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using The_Plague_Api.Data.Entities.Product;
 using The_Plague_Api.Helpers;
 
 namespace The_Plague_Api.Data.Dto
