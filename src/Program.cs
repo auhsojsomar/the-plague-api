@@ -47,6 +47,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   // Register AutoMapper
   builder.Services.AddAutoMapper(typeof(ProductProfile));
   builder.Services.AddAutoMapper(typeof(UserProfile));
+  builder.Services.AddAutoMapper(typeof(AdminProfile));
 
   // Add MongoDB settings
   builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
@@ -62,6 +63,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.AddSingleton<IPaymentStatusRepository, PaymentStatusRepository>();
   builder.Services.AddSingleton<ICartRepository, CartRepository>();
   builder.Services.AddSingleton<IShippingFeeRepository, ShippingFeeRepository>();
+  builder.Services.AddSingleton<IAdminRepository, AdminRepository>();
 
   // Register services
   builder.Services.AddSingleton<KeyGeneratorService>();
@@ -74,6 +76,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.AddScoped<IPaymentStatusService, PaymentStatusService>();
   builder.Services.AddScoped<ICartService, CartService>();
   builder.Services.AddScoped<IShippingFeeService, ShippingFeeService>();
+  builder.Services.AddScoped<IAdminService, AdminService>();
 
   // Add CORS
   builder.Services.AddCors(options =>
