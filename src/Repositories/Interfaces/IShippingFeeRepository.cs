@@ -6,7 +6,7 @@ namespace The_Plague_Api.Repositories.Interfaces
   {
     Task<IEnumerable<ShippingFee>> GetAllAsync();
     Task<ShippingFee?> GetByIdAsync(string id);
-    Task<ShippingFee?> GetByNameAsync(string name);
+    Task<ShippingFee?> GetByKeyAsync(int key);
     Task<ShippingFee> CreateAsync(ShippingFee shippingFee);
     Task<bool> UpdateAsync(string id, ShippingFee shippingFee);
     Task<bool> DeleteAsync(string id);

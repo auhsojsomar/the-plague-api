@@ -34,9 +34,9 @@ namespace The_Plague_Api.Repositories
       return await _shippingFeeService.GetAsync(id);
     }
 
-    public async Task<ShippingFee?> GetByNameAsync(string name)
+    public async Task<ShippingFee?> GetByKeyAsync(int key)
     {
-      var filter = Builders<ShippingFee>.Filter.Eq(s => s.Name, name);
+      var filter = Builders<ShippingFee>.Filter.Eq(s => s.Key, key);
       return await _shippingFeeCollection.Find(filter).FirstOrDefaultAsync();
     }
 

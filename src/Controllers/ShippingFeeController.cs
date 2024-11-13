@@ -32,10 +32,10 @@ namespace The_Plague_Api.Controllers
       return Ok(shippingFee);
     }
 
-    [HttpGet("name/{name}")]
-    public async Task<ActionResult<ShippingFee>> GetShippingFeeByName(string name)
+    [HttpGet("key/{key}")]
+    public async Task<ActionResult<ShippingFee>> GetShippingFeeByKey(int key)
     {
-      var shippingFee = await _shippingFeeService.GetShippingFeeByNameAsync(name);
+      var shippingFee = await _shippingFeeService.GetShippingFeeByKeyAsync(key);
       if (shippingFee == null)
         return NotFound();
 
