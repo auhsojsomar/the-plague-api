@@ -2,9 +2,8 @@ using AutoMapper;
 using The_Plague_Api.Data.Entities.User;
 using The_Plague_Api.Repositories.Interfaces;
 using The_Plague_Api.Services.Interfaces;
-using The_Plague_Api.Services.Authentication;
 using The_Plague_Api.Data.Dto;
-using Microsoft.AspNetCore.Mvc;
+using System.Security.Authentication;
 
 namespace The_Plague_Api.Services
 {
@@ -12,13 +11,11 @@ namespace The_Plague_Api.Services
   {
     private readonly IAdminRepository _adminRepository;
     private readonly IMapper _mapper;
-    private readonly JwtService _jwtService; // JwtService for token generation
 
-    public AdminService(IAdminRepository adminRepository, IMapper mapper, JwtService jwtService)
+    public AdminService(IAdminRepository adminRepository, IMapper mapper)
     {
       _adminRepository = adminRepository;
       _mapper = mapper;
-      _jwtService = jwtService; // Injecting JwtService
     }
 
     // Get all admins
@@ -62,13 +59,10 @@ namespace The_Plague_Api.Services
       try
       {
         var admin = await _adminRepository.GetByUsernameAsync(adminDto.Username);
-        if (admin == null)
-          throw new ApplicationException("Invalid email or password.");
-
-        // Verify the password
-        bool isPasswordValid = BCrypt.Net.BCrypt.Verify(adminDto.Password, admin.Password);
-        if (!isPasswordValid)
-          throw new ApplicationException("Invalid email or password.");
+        if (admin == null || !VerifyPassword(adminDto.Password, admin.Password))
+        {
+          throw new AuthenticationException("Invalid username or password.");
+        }
 
         return admin;
       }
@@ -78,11 +72,15 @@ namespace The_Plague_Api.Services
       }
     }
 
-
     // Delete admin by ID
     public async Task<bool> DeleteAdminAsync(string id)
     {
       return await _adminRepository.DeleteAsync(id);
+    }
+
+    private bool VerifyPassword(string plainPassword, string hashedPassword)
+    {
+      return BCrypt.Net.BCrypt.Verify(plainPassword, hashedPassword);
     }
   }
 }
