@@ -117,7 +117,7 @@ namespace The_Plague_Api.Services
       orderDto.OrderStatus = _mapper.Map<BaseDto>(orderStatus);
       orderDto.PaymentMethod = _mapper.Map<BaseDto>(paymentMethod);
       orderDto.PaymentStatus = _mapper.Map<BaseDto>(paymentStatus);
-      orderDto.ShippingFee = _mapper.Map<BaseDto>(shippingFee);
+      orderDto.ShippingFee = _mapper.Map<ShippingFeeDto>(shippingFee);
 
       // Assign user details
       if (order.UserId != null)

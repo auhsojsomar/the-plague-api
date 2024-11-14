@@ -17,7 +17,7 @@ public class OrdeProfile : Profile
     CreateMap<PaymentStatus, BaseDto>();
 
     // Map ShippingFee to BaseDto
-    CreateMap<ShippingFee, BaseDto>();
+    CreateMap<ShippingFee, ShippingFeeDto>();
 
     CreateMap<OrderItem, OrderItemDto>();
 

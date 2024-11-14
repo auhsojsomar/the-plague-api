@@ -15,7 +15,7 @@ namespace The_Plague_Api.Data.Dto
 
     public required BaseDto PaymentStatus { get; set; }
 
-    public required BaseDto ShippingFee { get; set; }
+    public required ShippingFeeDto ShippingFee { get; set; }
 
     public required string PaymentTransactionFile { get; set; }
 
