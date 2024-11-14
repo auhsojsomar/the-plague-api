@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.JsonWebTokens;
 using The_Plague_Api.Services.Authentication;
 
 namespace The_Plague_Api.Controllers
@@ -52,7 +51,7 @@ namespace The_Plague_Api.Controllers
       var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
       var email = principal.FindFirst(ClaimTypes.Email)?.Value;
 
-      return Ok(new { userId, email });
+      return Ok(new { adminId = userId, username = email });
     }
 
   }
