@@ -1,3 +1,4 @@
+using The_Plague_Api.Data.Dto;
 using The_Plague_Api.Data.Entities.Order;
 
 namespace The_Plague_Api.Repositories.Interfaces
