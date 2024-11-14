@@ -22,6 +22,8 @@ namespace The_Plague_Api.Data.Entities.Product
     [Required]
     public ICollection<Variant> Variants { get; set; } = new List<Variant>();
 
+    public int IsActive { get; set; } = 1;
+
     public DateTime DateCreated { get; set; } = DateTime.UtcNow;
 
     public DateTime DateModified { get; set; } = DateTime.UtcNow;
