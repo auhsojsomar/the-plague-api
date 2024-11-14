@@ -21,6 +21,7 @@ public class ProductProfile : Profile
         .ForMember(dest => dest.Id, opt => opt.Ignore())
         .ReverseMap();
 
+
     // Size mappings
     CreateMap<SizeDto, Size>()
         .ForMember(dest => dest.Id, opt => opt.Ignore())

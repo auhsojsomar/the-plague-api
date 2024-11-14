@@ -18,6 +18,8 @@ namespace The_Plague_Api.Data.MappingPorfiles
       CreateMap<UserLoginDto, User>()
        .ForMember(dest => dest.Id, opt => opt.Ignore())
        .ReverseMap();
+
+      CreateMap<GuestDto, UserDto>().ReverseMap();
     }
   }
 }
