@@ -48,6 +48,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.AddAutoMapper(typeof(ProductProfile));
   builder.Services.AddAutoMapper(typeof(UserProfile));
   builder.Services.AddAutoMapper(typeof(AdminProfile));
+  builder.Services.AddAutoMapper(typeof(OrdeProfile));
 
   // Add MongoDB settings
   builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDbSettings"));
