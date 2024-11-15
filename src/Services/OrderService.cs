@@ -82,14 +82,64 @@ namespace The_Plague_Api.Services
       return orderDto;
     }
 
-    public async Task<bool> UpdateOrderAsync(string id, Order order)
+    public async Task<bool> UpdateOrderAsync(string id, UpdateOrderDto updateOrder)
     {
       ValidateId(id);
-      await ValidateEntityIdsAsync(order);
-      await UpdateTotalPriceAsync(order);
-      await UpdateStockAndRemoveFromCartOnPayment(order);
-      return await _orderRepository.UpdateAsync(id, order);
+
+      // Fetch the existing order
+      var existingOrder = await _orderRepository.GetByIdAsync(id);
+      if (existingOrder == null)
+      {
+        throw new ApplicationException($"Order with ID {id} not found.");
+      }
+
+      // Update the order only with the fields provided
+      if (updateOrder.Items != null)
+      {
+        existingOrder.Items = updateOrder.Items;  // Update Items if provided
+      }
+
+      if (updateOrder.OrderStatusKey.HasValue)
+      {
+        existingOrder.OrderStatusKey = updateOrder.OrderStatusKey.Value;
+      }
+
+      if (updateOrder.PaymentMethodKey.HasValue)
+      {
+        existingOrder.PaymentMethodKey = updateOrder.PaymentMethodKey.Value;
+      }
+
+      if (updateOrder.PaymentStatusKey.HasValue)
+      {
+        existingOrder.PaymentStatusKey = updateOrder.PaymentStatusKey.Value;
+      }
+
+      if (updateOrder.ShippingFeeKey.HasValue)
+      {
+        existingOrder.ShippingFeeKey = updateOrder.ShippingFeeKey.Value;
+      }
+
+      if (updateOrder.TotalPrice.HasValue)
+      {
+        existingOrder.SetTotalPrice(updateOrder.TotalPrice.Value);
+      }
+
+      if (updateOrder.ShippingAddress != null)
+      {
+        existingOrder.ShippingAddress = updateOrder.ShippingAddress;
+      }
+
+      if (!string.IsNullOrEmpty(updateOrder.PaymentTransactionFile))
+      {
+        existingOrder.PaymentTransactionFile = updateOrder.PaymentTransactionFile;
+      }
+
+      await UpdateStockAndRemoveFromCartOnPayment(existingOrder);
+
+      // Save the updated order
+      return await _orderRepository.UpdateAsync(id, existingOrder);
     }
+
 
     public async Task<bool> DeleteOrderAsync(string id)
     {

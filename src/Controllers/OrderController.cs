@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using The_Plague_Api.Data.Dto;
 using The_Plague_Api.Data.Entities.Order;
 using The_Plague_Api.Services.Interfaces;
 
@@ -40,7 +41,7 @@ namespace The_Plague_Api.Controllers
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateOrder(string id, [FromBody] Order order)
+    public async Task<IActionResult> UpdateOrder(string id, [FromBody] UpdateOrderDto order)
     {
       var success = await _orderService.UpdateOrderAsync(id, order);
       if (!success)

@@ -11,7 +11,7 @@ namespace The_Plague_Api.Services.Interfaces
 
     Task<OrderDto> CreateOrderAsync(Order order);
 
-    Task<bool> UpdateOrderAsync(string id, Order order);
+    Task<bool> UpdateOrderAsync(string id, UpdateOrderDto order);
 
     Task<bool> DeleteOrderAsync(string id);
   }
