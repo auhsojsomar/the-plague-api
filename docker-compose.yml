@@ -36,7 +36,7 @@ services:
       [
         "sh",
         "-c",
-        "until nc -z -v -w30 mongo 27017; do echo 'Waiting for MongoDB...'; sleep 5; done; node server.js",
+        "until nc -z -v -w30 mongo 27017; do echo 'Waiting for MongoDB...'; sleep 5; done; dotnet The_Plague_Api.dll",
       ]
 
 volumes:
