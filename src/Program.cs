@@ -96,6 +96,13 @@ void ConfigureServices(WebApplicationBuilder builder)
               .AllowAnyMethod()
               .AllowAnyHeader();
       });
+    // Add internal Railway hostname for the frontend service
+    options.AddPolicy("AllowFrontendInternal", builder =>
+      {
+        builder.WithOrigins("http://the_plague_client:3000") // Internal hostname for the frontend service
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+      });
   });
 
   // Add Swagger
