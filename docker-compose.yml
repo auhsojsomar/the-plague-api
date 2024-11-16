@@ -6,7 +6,7 @@ services:
     container_name: "the_plague_db"
     restart: always
     ports:
-      - "8090:27017" # Exposing MongoDB on port 8090
+      - "27017:27017" # Exposing MongoDB on port 8090
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASSWORD}
@@ -32,6 +32,12 @@ services:
       - mongo # Ensure MongoDB starts first
     networks:
       - the_plague_network
+    command:
+      [
+        "sh",
+        "-c",
+        "until nc -z -v -w30 mongo 27017; do echo 'Waiting for MongoDB...'; sleep 5; done; node server.js",
+      ]
 
 volumes:
   mongo_data: # Only define the volume for MongoDB
