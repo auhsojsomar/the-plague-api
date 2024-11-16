@@ -91,7 +91,8 @@ void ConfigureServices(WebApplicationBuilder builder)
 
     options.AddPolicy("AllowProduction", builder =>
       {
-        builder.WithOrigins("https://the-plague-clothing-dev.netlify.app")
+        builder.WithOrigins("https://the-plague-clothing-dev.netlify.app",
+                            "https://the-plague-production.up.railway.app/")
               .AllowAnyMethod()
               .AllowAnyHeader();
       });
