@@ -7,6 +7,6 @@ namespace The_Plague_Api.Settings
     public required string Username { get; set; }
     public required string Password { get; set; }
     public required string DatabaseName { get; set; }
-    public string ConnectionString => $"mongodb://{Username}:{Password}@{Host}:{Port}";
+    public string ConnectionString => $"mongodb://{Username}:{Password}@{Host}:{Port}/{DatabaseName}";
   }
 }
