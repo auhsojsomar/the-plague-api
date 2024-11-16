@@ -1,20 +1,6 @@
 version: "3.8"
 
 services:
-  mongo:
-    image: "mongo"
-    container_name: "the_plague_db"
-    restart: always
-    ports:
-      - "27017:27017" # Exposing MongoDB on port 8090
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASSWORD}
-    networks:
-      - the_plague_network
-    volumes:
-      - mongo_data:/data/db # Persist MongoDB data
-
   the_plague_api:
     image: "the_plague_api:1.0.0"
     container_name: "the_plague_api_container"
@@ -30,20 +16,9 @@ services:
       - MONGO_DB_HOST=mongo
       - MONGO_DB_PORT=${MONGO_DB_PORT}
       - MONGO_DB_NAME=${MONGO_DB_NAME}
-    depends_on:
-      - mongo # Ensure MongoDB starts first
     networks:
       - the_plague_network
-    command:
-      [
-        "sh",
-        "-c",
-        "until nc -z -v -w30 mongo 27017; do echo 'Waiting for MongoDB...'; sleep 5; done; dotnet The_Plague_Api.dll",
-      ]
-
-volumes:
-  mongo_data: # Only define the volume for MongoDB
 
 networks:
   the_plague_network:
-    driver: bridge # Use the same network as the front-end
+    driver: bridge

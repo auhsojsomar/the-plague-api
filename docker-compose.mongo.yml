@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  mongo:
+    image: "mongo"
+    container_name: "the_plague_db"
+    restart: always
+    ports:
+      - "27017:27017" # Exposing MongoDB on port 27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASSWORD}
+    networks:
+      - the_plague_network
+    volumes:
+      - mongo_data:/data/db # Persist MongoDB data
+
+volumes:
+  mongo_data: # Only define the volume for MongoDB
+
+networks:
+  the_plague_network:
+    driver: bridge # Use a custom network for inter-service communication
