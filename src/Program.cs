@@ -82,26 +82,12 @@ void ConfigureServices(WebApplicationBuilder builder)
   // Add CORS
   builder.Services.AddCors(options =>
   {
-    options.AddPolicy("AllowLocalhost", builder =>
+    options.AddPolicy("AllowFrontend", builder =>
       {
-        builder.WithOrigins("http://localhost:3000")
-                .AllowAnyMethod()
-                .AllowAnyHeader();
-      });
-
-    options.AddPolicy("AllowProduction", builder =>
-      {
-        builder.WithOrigins("https://the-plague-clothing-dev.netlify.app",
-                            "https://the-plague.up.railway.app")
+        builder.WithOrigins("https://the-plague.up.railway.app")
               .AllowAnyMethod()
-              .AllowAnyHeader();
-      });
-    // Add internal Railway hostname for the frontend service
-    options.AddPolicy("AllowFrontendInternal", builder =>
-      {
-        builder.WithOrigins("http://the_plague_client:3000") // Internal hostname for the frontend service
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+              .AllowAnyHeader()
+              .AllowCredentials(); // If needed
       });
   });
 
@@ -124,7 +110,7 @@ void ConfigureMiddleware(WebApplication app)
   }
 
   app.UseHttpsRedirection();
-  app.UseCors("AllowLocalhost");
+  app.UseCors("AllowFrontend");
 
   app.UseAuthentication();
   app.UseAuthorization();
