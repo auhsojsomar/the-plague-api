@@ -88,7 +88,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   {
     options.AddPolicy("AllowFrontend", builder =>
       {
-        builder.WithOrigins("https://the-plague.up.railway.app", "http://localhost:3001")
+        builder.WithOrigins("https://the-plague.up.railway.app", "https://the-plague-dev.up.railway.app", "http://localhost:3001")
               .AllowAnyMethod()
               .AllowAnyHeader();
       });
