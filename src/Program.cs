@@ -10,6 +10,10 @@ using The_Plague_Api.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Load configuration based on the environment
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true);
+
 // Add services to the container
 ConfigureServices(builder);
 
@@ -84,10 +88,9 @@ void ConfigureServices(WebApplicationBuilder builder)
   {
     options.AddPolicy("AllowFrontend", builder =>
       {
-        builder.WithOrigins("https://the-plague.up.railway.app")
+        builder.WithOrigins("https://the-plague.up.railway.app", "http://localhost:3001")
               .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials(); // If needed
+              .AllowAnyHeader();
       });
   });
 
