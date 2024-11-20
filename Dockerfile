@@ -8,7 +8,7 @@ WORKDIR /app/src
 RUN dotnet restore
 
 # Copy the rest of the application code
-COPY src/. ./
+COPY src/. ./ 
 
 # Publish the application
 RUN dotnet publish -c Release -o /app/out
@@ -16,7 +16,7 @@ RUN dotnet publish -c Release -o /app/out
 # Build the runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/out ./
+COPY --from=build /app/out ./  
 
 # Expose the port your application will run on
 EXPOSE 8080

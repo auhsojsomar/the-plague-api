@@ -1,9 +1,0 @@
-{
-  "build": {
-    "dockerfilePath": "Dockerfile"
-  },
-  "envs": {
-    "MONGO_INITDB_ROOT_USERNAME": "admin",
-    "MONGO_INITDB_ROOT_PASSWORD": "SAUls364C9zrcti"
-  }
-}

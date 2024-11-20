@@ -7,11 +7,11 @@ services:
     restart: always
     ports:
       - "27017:27017" # Exposing MongoDB on port 27017
+    networks:
+      - the_plague_network
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_DB_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_DB_PASSWORD}
-    networks:
-      - the_plague_network
     volumes:
       - mongo_data:/data/db # Persist MongoDB data
 
@@ -20,4 +20,5 @@ volumes:
 
 networks:
   the_plague_network:
-    driver: bridge # Use a custom network for inter-service communication
+    name: the_plague_network
+    external: true

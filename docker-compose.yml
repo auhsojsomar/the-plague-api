@@ -12,7 +12,10 @@ services:
       - "8080:8080"
     networks:
       - the_plague_network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
 networks:
   the_plague_network:
-    driver: bridge
+    name: the_plague_network
+    external: true
