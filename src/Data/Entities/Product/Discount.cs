@@ -1,9 +1,10 @@
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using The_Plague_Api.Data.Interface;
 
-namespace The_Plague_Api.Data.Entities
+namespace The_Plague_Api.Data.Entities.Product
 {
   public class Discount : IMongo
   {
@@ -13,7 +14,11 @@ namespace The_Plague_Api.Data.Entities
 
     public DiscountType Type { get; set; }
 
-    [Column(TypeName = "decimal(18,2)")]
+    [Required, Column(TypeName = "decimal(18,2)")]
     public decimal Value { get; set; }
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }

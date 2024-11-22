@@ -1,10 +1,21 @@
+version: "3.8"
+
 services:
-  mongo:
-    image: "mongo"
-    container_name: "the_plague_db"
+  the_plague_api:
+    image: "the_plague_api:1.0.0"
+    container_name: "the_plague_api_container"
+    build:
+      context: . # Path to your back-end source
+      dockerfile: Dockerfile
     restart: always
     ports:
-      - 8090:27017
+      - "8080:8080"
+    networks:
+      - the_plague_network
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: SAUls364C9zrcti
+      - ASPNETCORE_ENVIRONMENT=Production
+
+networks:
+  the_plague_network:
+    name: the_plague_network
+    external: true

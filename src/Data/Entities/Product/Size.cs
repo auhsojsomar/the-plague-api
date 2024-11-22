@@ -1,10 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using The_Plague_Api.Data.Interface;
 
-namespace The_Plague_Api.Data.Entities
+namespace The_Plague_Api.Data.Entities.Product
 {
-  public class Size
+  public class Size : IMongo
   {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
@@ -12,5 +13,9 @@ namespace The_Plague_Api.Data.Entities
 
     [Required, MaxLength(50)]
     public required string Name { get; set; }
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
+
+    public DateTime DateModified { get; set; } = DateTime.UtcNow;
   }
 }

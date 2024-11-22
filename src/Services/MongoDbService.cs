@@ -1,8 +1,6 @@
-using The_Plague_Api.Data.Interface;
-using MongoDB.Driver;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using The_Plague_Api.Services.Interfaces;
+using MongoDB.Driver;
+using The_Plague_Api.Data.Interface;
 
 namespace The_Plague_Api.Services
 {
@@ -52,6 +50,18 @@ namespace The_Plague_Api.Services
       }
     }
 
+    public async Task<T?> GetAsync(FilterDefinition<T> filter)
+    {
+      try
+      {
+        return await _collection.Find(filter).FirstOrDefaultAsync(); ;
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException($"Failed to retrieve filtered data: {ex.Message}", ex);
+      }
+    }
+
     public async Task<T> CreateAsync(T entity)
     {
       try
@@ -94,5 +104,6 @@ namespace The_Plague_Api.Services
         throw new ApplicationException($"Failed to delete entity with ID {id}: {ex.Message}", ex);
       }
     }
+
   }
 }

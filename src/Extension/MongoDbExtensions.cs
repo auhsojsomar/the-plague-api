@@ -3,7 +3,7 @@ using The_Plague_Api.Settings;
 
 namespace The_Plague_Api.Extension
 {
-  public static class MongoDbConnection
+  public static class MongoDbExtension
   {
     public static IServiceCollection AddMongoDbConnection(this IServiceCollection services)
     {
