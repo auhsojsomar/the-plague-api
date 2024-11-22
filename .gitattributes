@@ -1,0 +1,2 @@
+src/appsettings.json merge=ours
+src/appsettings.Development.json merge=ours

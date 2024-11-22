@@ -52,6 +52,3 @@ artifacts/
 *.idb
 *.db
 *.log
-
-src/appsettings.json
-src/appsettings.Development.json
