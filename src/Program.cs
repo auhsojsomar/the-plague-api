@@ -7,8 +7,10 @@ using The_Plague_Api.Settings;
 using The_Plague_Api.Data.MappingPorfiles;
 using Microsoft.OpenApi.Models;
 using The_Plague_Api.Extension;
+using System.Text.RegularExpressions;
 
 var builder = WebApplication.CreateBuilder(args);
+// builder.WebHost.UseUrls("http://0.0.0.0:8080");
 
 // Load configuration based on the environment
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -85,14 +87,31 @@ void ConfigureServices(WebApplicationBuilder builder)
 
   // Add CORS
   builder.Services.AddCors(options =>
+ {
+   options.AddPolicy("AllowCombinedOrigins", builder =>
   {
-    options.AddPolicy("AllowFrontend", builder =>
-      {
-        builder.WithOrigins("https://the-plague.up.railway.app", "https://the-plague-dev.up.railway.app", "http://localhost:3001", "http://localhost:3000")
-              .AllowAnyMethod()
-              .AllowAnyHeader();
-      });
+    builder.SetIsOriginAllowed(origin =>
+   {
+     // Check if the origin is a specific allowed URL
+     var allowedOrigins = new[]
+       {
+                "https://the-plague.up.railway.app",
+                "https://the-plague-dev.up.railway.app",
+                "https://theplagueclothing.com",
+                "http://localhost:3001",
+                "http://localhost:3000",
+          };
+
+     // Allow specific URLs or Vercel subdomains matching the regex
+     return allowedOrigins.Contains(origin) ||
+              Regex.IsMatch(origin, @"^https:\/\/the-plague.*\.vercel\.app$");
+   })
+   .AllowAnyMethod()     // Allow all HTTP methods (GET, POST, PUT, DELETE, etc.)
+   .AllowAnyHeader()     // Allow all headers
+   .AllowCredentials();  // Allow cookies and authorization headers
   });
+ });
+
 
   // Add Swagger
   builder.Services.AddSwaggerGen(c =>
@@ -113,7 +132,7 @@ void ConfigureMiddleware(WebApplication app)
   }
 
   app.UseHttpsRedirection();
-  app.UseCors("AllowFrontend");
+  app.UseCors("AllowCombinedOrigins");
 
   app.UseAuthentication();
   app.UseAuthorization();

@@ -13,7 +13,7 @@ services:
     networks:
       - the_plague_network
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
 
 networks:
   the_plague_network:
