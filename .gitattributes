@@ -1,2 +1,3 @@
 src/appsettings.json merge=ours
 src/appsettings.Development.json merge=ours
+src/Settings/MongoDbSettings.cs merge=ours
