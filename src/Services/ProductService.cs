@@ -125,7 +125,7 @@ namespace The_Plague_Api.Services
       return await _productRepository.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<string>> GetUniqueSizesAsync()
+    public async Task<IEnumerable<SizeDto>> GetUniqueSizesAsync()
     {
       return await _productRepository.GetUniqueSizesAsync();
     }
