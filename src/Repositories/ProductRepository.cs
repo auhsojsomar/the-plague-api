@@ -63,7 +63,7 @@ namespace The_Plague_Api.Repositories
       return _productService.DeleteAsync(id);
     }
 
-    public async Task<IEnumerable<string>> GetUniqueSizesAsync()
+    public async Task<IEnumerable<SizeDto>> GetUniqueSizesAsync()
     {
       var products = await _productService.GetAllAsync();
       return ExtractUniqueSizes(products);
@@ -109,12 +109,12 @@ namespace The_Plague_Api.Repositories
     }
 
     // Helper method to extract unique sizes from product variants
-    private static IEnumerable<string> ExtractUniqueSizes(IEnumerable<Product> products)
+    private static IEnumerable<SizeDto> ExtractUniqueSizes(IEnumerable<Product> products)
     {
       return products
           .SelectMany(p => p.Variants)
-          .Select(v => v.Size.Name)
-          .Distinct()
+          .Select(v => new SizeDto { Id = v.Size.Id, Name = v.Size.Name })
+          .DistinctBy(c => c.Id)
           .ToList();
     }
 
