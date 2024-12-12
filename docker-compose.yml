@@ -5,7 +5,7 @@ services:
     image: "the_plague_api:1.0.0"
     container_name: "the_plague_api_container"
     build:
-      context: . # Path to your back-end source
+      context: .
       dockerfile: Dockerfile
     restart: always
     ports:
@@ -13,7 +13,7 @@ services:
     networks:
       - the_plague_network
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
 
 networks:
   the_plague_network:
