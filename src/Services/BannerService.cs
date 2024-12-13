@@ -18,6 +18,16 @@ namespace The_Plague_Api.Services
       return await _bannerRepository.GetAllAsync();
     }
 
+    public async Task<IEnumerable<Banner>> GetMainBannerAsync()
+    {
+      return await _bannerRepository.GetMainBannerAsync();
+    }
+
+    public async Task<IEnumerable<Banner>> GetProductBannerAsync()
+    {
+      return await _bannerRepository.GetProductBannerAsync();
+    }
+
     public async Task<Banner?> GetBannerByIdAsync(string id)
     {
       return await _bannerRepository.GetByIdAsync(id);

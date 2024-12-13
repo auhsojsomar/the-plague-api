@@ -22,6 +22,20 @@ namespace The_Plague_Api.Controllers
       return Ok(banners);
     }
 
+    [HttpGet("main")]
+    public async Task<ActionResult<IEnumerable<Banner>>> GetMainBanner()
+    {
+      var banners = await _bannerService.GetMainBannerAsync();
+      return Ok(banners);
+    }
+
+    [HttpGet("product")]
+    public async Task<ActionResult<IEnumerable<Banner>>> GetProductBanner()
+    {
+      var banners = await _bannerService.GetProductBannerAsync();
+      return Ok(banners);
+    }
+
     [HttpGet("{id}")]
     public async Task<ActionResult<Banner>> GetBannerById(string id)
     {
