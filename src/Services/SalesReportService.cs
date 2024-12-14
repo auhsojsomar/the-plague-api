@@ -45,8 +45,12 @@ namespace The_Plague_Api.Services
     private async Task<IEnumerable<Order>> GetFilteredOrdersAsync(SalesReportModel salesReportModel)
     {
       var orders = await _orderRepository.GetAllAsync();
-      return orders.Where(order => order.DateCreated >= salesReportModel.DateFrom &&
-                                   order.DateCreated <= salesReportModel.DateTo &&
+
+      var dateFrom = salesReportModel.DateFrom; // 2024-12-01 00:00:00
+      var dateTo = salesReportModel.DateTo.AddDays(1).AddMilliseconds(-1); // 2024-12-15 23:59:59.999
+
+      return orders.Where(order => order.DateCreated >= dateFrom &&
+                                   order.DateCreated <= dateTo &&
                                    order.PaymentStatusKey == 2); // Assuming 2 is 'Paid'
     }
 
