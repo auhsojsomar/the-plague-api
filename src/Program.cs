@@ -86,6 +86,7 @@ void ConfigureServices(WebApplicationBuilder builder)
   builder.Services.AddScoped<IShippingFeeService, ShippingFeeService>();
   builder.Services.AddScoped<IAdminService, AdminService>();
   builder.Services.AddScoped<IBannerService, BannerService>();
+  builder.Services.AddScoped<ISalesReportService, SalesReportService>();
 
   // Add CORS
   builder.Services.AddCors(options =>
