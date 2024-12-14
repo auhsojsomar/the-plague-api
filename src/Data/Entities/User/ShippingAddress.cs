@@ -20,5 +20,8 @@ namespace The_Plague_Api.Data.Entities.User
 
     [Required]
     public required string ContactNumber { get; set; }
+
+    [Required]
+    public required string Email { get; set; }
   }
 }

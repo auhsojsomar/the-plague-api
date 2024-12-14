@@ -10,7 +10,7 @@ namespace The_Plague_Api.Services.Interfaces
     Task<ProductDto> CreateProductAsync(ProductDto product);
     Task<bool> UpdateProductAsync(string id, ProductDto product);
     Task<bool> DeleteProductAsync(string id);
-    Task<IEnumerable<string>> GetUniqueSizesAsync();
+    Task<IEnumerable<SizeDto>> GetUniqueSizesAsync();
     Task<IEnumerable<ColorDto>> GetUniqueColorsAsync();
   }
 }

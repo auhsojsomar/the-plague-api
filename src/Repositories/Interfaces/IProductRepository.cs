@@ -11,7 +11,7 @@ namespace The_Plague_Api.Repositories.Interfaces
     Task<Product> CreateAsync(Product product);
     Task<bool> UpdateAsync(string id, Product product);
     Task<bool> DeleteAsync(string id);
-    Task<IEnumerable<string>> GetUniqueSizesAsync();
+    Task<IEnumerable<SizeDto>> GetUniqueSizesAsync();
     Task<IEnumerable<ColorDto>> GetUniqueColorsAsync();
     Task<Color?> GetColorByNameAsync(string name);
     Task<Size?> GetSizeByNameAsync(string name);
